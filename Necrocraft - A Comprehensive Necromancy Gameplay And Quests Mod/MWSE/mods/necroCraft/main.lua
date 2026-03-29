@@ -1,6 +1,5 @@
 local skillModule = require("OtherSkills.skillModule")
 local magic = require("NecroCraft.magic")
-local log = mwse.Logger.new()
 local utility = require("NecroCraft.utility")
 local undead = require("NecroCraft.undead")
 local corpsePreparation = require("NecroCraft.corpsePreparation")
@@ -18,21 +17,16 @@ local skillStatus = "inactive"
 local activationRef
 
 local function onMenuDialog(e)
-	if not activationRef then
-		return
-	end
+	if not activationRef then return end
 	local name = activationRef.data.necroCraft and activationRef.data.necroCraft.name
-	if not name then
-		return
-	end
+	if not name then return end
 	local child = e.element:findChild(-1044)
 	child.text = name
 end
 
 event.register("modConfigReady", function()
-	require("NecroCraft.mcm")
-	common.config = require("NecroCraft.config")
-	log.level = common.config.logLevel
+    require("NecroCraft.mcm")
+	common.config  = require("NecroCraft.config")
 	event.unregister("uiActivated", onMenuDialog, { filter = "MenuDialog" })
 	if common.config.preserveTooltip then
 		event.register("uiActivated", onMenuDialog, { filter = "MenuDialog" })
@@ -48,25 +42,28 @@ local function registerGUI()
 	GUI_ID.parent = tes3ui.registerID("NC_Tooltip_Parent")
 	GUI_ID.image = tes3ui.registerID("NC_Tooltip_Image")
 	GUI_ID.name = tes3ui.registerID("NC_Tooltip_Name")
-	GUI_ID.weight = tes3ui.registerID("NC_Tooltip_Weight")
-	GUI_ID.value = tes3ui.registerID("NC_Tooltip_Value")
+    GUI_ID.weight = tes3ui.registerID("NC_Tooltip_Weight")
+    GUI_ID.value = tes3ui.registerID("NC_Tooltip_Value")
 end
+
 
 -- Skill Module and crafting
 
 local function onSkillReady()
-	skillModule.registerSkill("NC:CorpsePreparation", {
-		name = strings.corpsePreparation, -- default: skill id
-		value = 5, -- default: 1
-		progress = 0, -- default: 0
-		lvlCap = 100, -- default: 100
-		icon = "Icons/NecroCraft/corpsePreparation.dds", -- default: a circle icon
-		attribute = tes3.attribute.intelligence, -- optional
-		description = strings.corpsePreparationDesc, -- optional
-		specialization = tes3.specialization.magic, -- optional. Icon background is gray if none set
-		active = skillStatus, -- defaults to "active"
-	})
-end
+	skillModule.registerSkill(
+		"NC:CorpsePreparation", 
+		{	name 			=		strings.corpsePreparation, 					--default: skill id
+			value			= 		5,											--default: 1
+			progress		=		0, 											--default: 0
+			lvlCap			=		100, 										--default: 100	
+			icon 			=		"Icons/NecroCraft/corpsePreparation.dds", 				--default: a circle icon
+			attribute 		=		tes3.attribute.intelligence,				--optional
+			description 	= 		strings.corpsePreparationDesc,		--optional
+			specialization 	= 		tes3.specialization.magic,					--optional. Icon background is gray if none set
+			active			=		skillStatus									--defaults to "active"
+		}
+	)
+end			
 
 local function onEquip(e)
 	if bones.isBone(e.item.id) then
@@ -77,31 +74,33 @@ end
 
 local function messageBox(params)
 
-	local message = params.message
-	local buttons = params.buttons
+    local message = params.message
+    local buttons = params.buttons
 
-	local function callback(e)
-		-- get button from 0-indexed MW param
-		local button = buttons[e.button + 1]
-		if button.callback then
-			timer.start {
-				duration = 0.1,
-				type = timer.real,
-				callback = function()
-					button.callback()
-				end,
-			}
-		end
-	end
+    local function callback(e)
+        --get button from 0-indexed MW param
+        local button = buttons[e.button+1]
+        if button.callback then
+            timer.start{ duration = 0.1, type = timer.real, callback = function()
+                button.callback()
+            end}
+        end
+    end
 
-	-- Make list of strings to insert into buttons
-	local buttonStrings = {}
-	for _, button in ipairs(buttons) do
-		table.insert(buttonStrings, button.text)
-	end
+    --Make list of strings to insert into buttons
+    local buttonStrings = {}
+    for _, button in ipairs(buttons) do
+        table.insert(buttonStrings, button.text)
+    end
 
-	tes3.messageBox({ message = message, buttons = buttonStrings, callback = callback })
+    tes3.messageBox({
+        message = message,
+        buttons = buttonStrings,
+        callback = callback
+    })
 end
+
+
 
 local function onMenuContents(e)
 	corpsePreparation.onCorpseContents(e, activationRef)
@@ -111,7 +110,7 @@ end
 
 local function onTooltipDrawn(e)
 	if not e.reference then
-		return
+		return 
 	end
 	local child = e.tooltip:findChild(-1216)
 	if e.reference.data and e.reference.data.necroCraft and e.reference.data.necroCraft.name then
@@ -124,40 +123,36 @@ local function onTooltipDrawn(e)
 		return
 	end
 	local misc = undead.pileToMisc(e.reference)
-	if not misc then
-		return
-	end
+	if not misc then return end
 	local tooltip = tes3ui.createTooltipMenu()
 	child.visible = false
-	local helpMenuTitleBlock = e.tooltip:createBlock{ id = "HelpMenu_titleBlock" }
+	local helpMenuTitleBlock = e.tooltip:createBlock{id="HelpMenu_titleBlock"}
 	helpMenuTitleBlock.flowDirection = "left_to_right"
-	helpMenuTitleBlock.childAlignX = 0.5
-	helpMenuTitleBlock.autoHeight = true
-	helpMenuTitleBlock.autoWidth = true
-	local icon = helpMenuTitleBlock:createImage{ id = "HelpMenu_icon", path = "Icons\\" .. misc.icon }
-	local label = helpMenuTitleBlock:createLabel{ id = "HelpMenu_name", text = misc.name }
+    helpMenuTitleBlock.childAlignX = 0.5
+    helpMenuTitleBlock.autoHeight = true
+    helpMenuTitleBlock.autoWidth = true
+	local icon = helpMenuTitleBlock:createImage{id="HelpMenu_icon", path="Icons\\"..misc.icon}
+	local label = helpMenuTitleBlock:createLabel{id="HelpMenu_name", text=misc.name}
 	label.absolutePosAlignY = -0.5
 	label.positionY = -7
-	label.color = { 0.875, 0.788, 0.624 }
+	label.color = {0.875,0.788,0.624}
 	label.wrapText = true
-	tooltip:createLabel{ id = tes3ui.registerID("HelpMenu_weight"),
-                      text = "Weight: " .. string.format("%.2f", misc.weight) }
-	tooltip:createLabel{ id = tes3ui.registerID("HelpMenu_value"), text = "Value: " .. tostring(misc.value) }
-	event.trigger("uiObjectTooltip", { tooltip = tooltip, object = misc, count = 1 })
+	tooltip:createLabel{id=tes3ui.registerID("HelpMenu_weight"), text="Weight: "..string.format("%.2f", misc.weight)}
+	tooltip:createLabel{id=tes3ui.registerID("HelpMenu_value"), text="Value: "..tostring(misc.value)}
+	event.trigger("uiObjectTooltip", {tooltip=tooltip, object=misc, count=1})
 	-- local parent = e.tooltip:createBlock{id=GUI_ID.parent}
-	-- parent.flowDirection = "top_to_bottom"
-	-- parent.childAlignX = 0.5
-	-- parent.autoHeight = true
-	-- parent.autoWidth = true
+    -- parent.flowDirection = "top_to_bottom"
+    -- parent.childAlignX = 0.5
+    -- parent.autoHeight = true
+    -- parent.autoWidth = true
 	-- local label = parent:createLabel{id=GUI_ID.weight, text=string.format(strings.weight, misc.weight)}
-	-- label.wrapText = true
-	-- local label = parent:createLabel{id=GUI_ID.value, text=string.format(strings.value, misc.value)}
-	-- label.wrapText = true
+    -- label.wrapText = true
+    -- local label = parent:createLabel{id=GUI_ID.value, text=string.format(strings.value, misc.value)}
+    -- label.wrapText = true
 end
 
 local function onCalcHitChance(e)
-	if undead.pileToMisc(e.target) or undead.corpseToRaised(e.target) or
-	(e.target.data.necroCraft and e.target.data.necroCraft.feintDeath) then
+	if undead.pileToMisc(e.target) or undead.corpseToRaised(e.target) or (e.target.data.necroCraft and e.target.data.necroCraft.feintDeath) then
 		e.hitChance = 0
 	end
 end
@@ -173,14 +168,16 @@ local function harvestAshpit(reference)
 			if tes3.mobilePlayer.bounty > bounty then
 				tes3.mobilePlayer.bounty = tes3.mobilePlayer.bounty + common.config.bountyValue
 			end
-		end,
+		end
 	}
 end
 
 local function pickBonepile(reference)
 	if reference.data and reference.data.necroCraft and reference.data.necroCraft.isBeingRaised then
 		if string.startswith(reference.id, "NC_skeleton") then
-			tes3.showContentsMenu { reference = reference }
+			tes3.showContentsMenu{
+				reference = reference
+			}
 			timer.delayOneFrame(function()
 				undead.skeletonCrippleDrop(reference)
 			end)
@@ -188,11 +185,11 @@ local function pickBonepile(reference)
 		return false
 	end
 	local misc = undead.pileToMisc(reference)
-	if not misc then
+	if not misc then 
 		return
 	end
 	utility.safeDelete(reference)
-	tes3.addItem { reference = tes3.player, item = misc, count = 1, playSound = true }
+	tes3.addItem{reference=tes3.player, item=misc, count=1, playSound=true}
 end
 
 local function onActivate(e)
@@ -200,7 +197,7 @@ local function onActivate(e)
 		return
 	end
 	activationRef = e.target
-
+	
 	if not activationRef then
 		return
 	end
@@ -210,14 +207,13 @@ local function onActivate(e)
 	if undead.isRaisedByPlayer(activationRef) == false then
 		return false
 	end
-	if activationRef.baseObject.objectType == tes3.objectType.npc or activationRef.baseObject.objectType ==
-	tes3.objectType.creature then
-		if tes3.isAffectedBy { reference = activationRef, effect = tes3.effect.feintDeath } then
+	if activationRef.baseObject.objectType == tes3.objectType.npc or activationRef.baseObject.objectType == tes3.objectType.creature then
+		if tes3.isAffectedBy{reference = activationRef, effect = tes3.effect.feintDeath} then
 			return false
 		end
 	end
 	harvestAshpit(activationRef)
-
+	
 	local safeRef = tes3.makeSafeObjectHandle(activationRef)
 	timer.delayOneFrame(function()
 		if safeRef:valid() then
@@ -234,7 +230,7 @@ local function triggerGuards(cell)
 				for minion_id, __ in pairs(arr) do
 					local minionRef = tes3.getReference(minion_id)
 					if minionRef and ref.position:distance(minionRef.position) < 5000 then
-						if not tes3.isAffectedBy { reference = minionRef, effect = tes3.effect.concealUndead } then
+						if not tes3.isAffectedBy{reference = minionRef, effect = tes3.effect.concealUndead} then
 							ref.mobile:startCombat(minionRef.mobile)
 						end
 					end
@@ -245,12 +241,10 @@ local function triggerGuards(cell)
 end
 
 local function onDetectUndead(e)
-	if not e.isDetected then
-		return
+	if not e.isDetected then 
+		return 
 	end
-	if tes3.isAffectedBy { reference = e.target, effect = tes3.effect.concealUndead } then
-		return
-	end
+	if tes3.isAffectedBy{reference = e.target, effect = tes3.effect.concealUndead} then return end
 	if (e.target == tes3.mobilePlayer and tes3.player.object.race.id == "skeletonrace") then -- or undead.isRaisedByPlayer(e.target.reference) then
 		if e.detector.reference.object.isGuard then
 			e.detector:startCombat(e.target)
@@ -260,12 +254,13 @@ end
 
 local function editLevelLists()
 	local levList = tes3.getObject("random_book_wizard_evil") --[[@as tes3leveledItem]]
-	levList:insert(tes3.getObject("nc_bk_skeleton_cr") --[[@as tes3item]] , 1)
-	levList:insert(tes3.getObject("nc_bk_bonespider") --[[@as tes3item]] , 1)
-	levList:insert(tes3.getObject("nc_bk_corpse1") --[[@as tes3item]] , 1)
+	levList:insert(tes3.getObject("nc_bk_skeleton_cr") --[[@as tes3item]], 1)
+	levList:insert(tes3.getObject("nc_bk_bonespider") --[[@as tes3item]], 1)
+	levList:insert(tes3.getObject("nc_bk_corpse1") --[[@as tes3item]], 1)
 end
 
 -- Replaces summon skeleton scrolls with random necro books and ashpits in tombs and temples with lootable ones.
+
 
 local function onCellChanged(e)
 	triggerGuards(e.cell)
@@ -279,26 +274,25 @@ local trainingBooks = {
 	["TR_bk_m2-68_bwblessings"] = true,
 	["T_Bk_OnNecromanyPC"] = true,
 	["T_Bk_DresCremationPracticesTR"] = true,
-	["bk_legionsofthedead"] = true,
+	["bk_legionsofthedead"] = true
 }
 
 local function onBookRead(e)
 
 	local corpsePreparationGlobal = tes3.findGlobal("NC_CorpsePreparation")
 	local corpsePreparationSkill = skillModule.getSkill("NC:CorpsePreparation")
-	if corpsePreparationGlobal and corpsePreparationGlobal.value == 1 then
+	if corpsePreparationGlobal.value == 1 then
 		if trainingBooks[e.book.id] and not tes3.player.data.necroCraft.trainingBooksRead[e.book.id] then
 			tes3.player.data.necroCraft.trainingBooksRead[e.book.id] = true
 			corpsePreparationSkill:levelUpSkill(1)
-			local message = string.format(tes3.findGMST(tes3.gmst.sNotifyMessage39).value, corpsePreparationSkill.name,
-			                              corpsePreparationSkill.value)
-			tes3.playSound { reference = tes3.player, sound = "skillraise" }
-			tes3.messageBox(message)
+			local message = string.format( tes3.findGMST(tes3.gmst.sNotifyMessage39).value, corpsePreparationSkill.name, corpsePreparationSkill.value ) 
+            tes3.playSound{reference = tes3.player, sound = "skillraise"}
+			tes3.messageBox( message )
 		end
 		return
 	end
 
-	local book = string.sub(e.book.id, 1, -3) -- doesn't matter whether the book is opened or closed
+	local book = string.sub(e.book.id, 1, -3)	-- doesn't matter whether the book is opened or closed
 	if tes3.player.data.necroCraft.necroBooks[book] == nil then
 		return
 	end
@@ -311,38 +305,36 @@ local function onBookRead(e)
 	end
 	if count == 3 then
 		local buttons = {}
-		local yesButton = {
-			text = strings.yes,
-			callback = function()
-				tes3.addTopic { topic = strings.necromancers }
-				skillStatus = "active"
-				corpsePreparationGlobal.value = 1
-				-- skillModule.updateSkill("NC:CorpsePreparation", { active = skillStatus })
-				corpsePreparationSkill:updateSkill({ active = skillStatus })
-				-- event.unregister("bookGetText", onBookRead)
-				event.register("uiActivated", onMenuContents, { filter = "MenuContents" })
-				event.register("equip", onEquip)
-			end,
-		}
+		local yesButton = {	text = strings.yes, 
+							callback = function()
+										tes3.addTopic{topic=strings.necromancers}
+										skillStatus = "active"
+										corpsePreparationGlobal.value = 1
+										-- skillModule.updateSkill("NC:CorpsePreparation", { active = skillStatus })
+										corpsePreparationSkill:updateSkill({ active = skillStatus })
+										-- event.unregister("bookGetText", onBookRead)
+										event.register("uiActivated", onMenuContents, { filter = "MenuContents" })
+										event.register("equip", onEquip)
+							end}
 		table.insert(buttons, yesButton)
-		table.insert(buttons, { text = strings.no })
-		messageBox { message = strings.corpsePreparationLearnt, buttons = buttons }
+		table.insert(buttons, {text = strings.no})
+		messageBox{
+			message = strings.corpsePreparationLearnt, 
+			buttons = buttons
+		}
 	end
 end
 
 local function onSpellResist(e)
-	if e.target.data.necroCraft and e.target.data.necroCraft.feintDeath then
+	if e.target.data.necroCraft and e.target.data.necroCraft.feintDeath  then
 		e.resistedPercent = 100
 	end
 end
 
 local function onDamage(e)
-	if not e.reference then
-		return
-	end
+	if not e.reference then return end
 
-	if undead.pileToMisc(e.reference) or undead.corpseToRaised(e.reference) or
-	(e.reference.data.necroCraft and e.reference.data.necroCraft.feintDeath) then
+	if undead.pileToMisc(e.reference) or undead.corpseToRaised(e.reference) or (e.reference.data.necroCraft and e.reference.data.necroCraft.feintDeath) then
 		e.damage = 0
 		local health = e.reference.data.necroCraft and e.reference.data.necroCraft.feintDeath or e.mobile.health.base
 		e.mobile.health.current = health
@@ -350,29 +342,20 @@ local function onDamage(e)
 	end
 	if e.mobile.health.current - math.abs(e.damage) <= 1 then
 		undead.skeletonChampRestore(e.reference)
-		if tes3.isAffectedBy { reference = e.reference, effect = tes3.effect.deathPact } then
-			local itemData = soulGemLib.releaseSoul {
-				reference = e.reference,
-				position = e.reference.position,
-				gem = "NC_SoulGem_AzuraB",
-			}
+		if tes3.isAffectedBy{reference = e.reference, effect = tes3.effect.deathPact} then
+			local itemData = soulGemLib.releaseSoul{reference=e.reference, position=e.reference.position, gem="NC_SoulGem_AzuraB"}
 			if not itemData then
-				itemData = soulGemLib.releaseSoul {
-					reference = e.reference,
-					position = e.reference.position,
-					gem = "AB_Misc_SoulGemBlack",
-				}
+				itemData = soulGemLib.releaseSoul{reference=e.reference, position=e.reference.position, gem="AB_Misc_SoulGemBlack"}
 			end
 			if itemData then
 				local health = e.mobile.health.current + itemData.soul.soul - e.damage
-				tes3.modStatistic { reference = e.reference, name = "health", current = health, limit = true }
+				tes3.modStatistic{reference = e.reference, name = "health", current = health, limit = true}
 				e.damage = 0
 				return false
 			end
 		end
-		if e.reference == tes3.player and tes3.player.data.necroCraft.phylactery and
-		tes3.player.data.necroCraft.phylactery.container then
-			tes3.modStatistic { reference = e.reference, name = "health", current = 99999999, limit = true }
+		if e.reference == tes3.player and tes3.player.data.necroCraft.phylactery and tes3.player.data.necroCraft.phylactery.container then
+			tes3.modStatistic{reference = e.reference, name = "health", current = 99999999, limit = true}
 			lichdom.playerDeath()
 			e.damage = 0
 			return false
@@ -382,9 +365,7 @@ end
 
 local function onDeath(e)
 	local utype = undead.getType(e.reference.object)
-	if not utype then
-		return
-	end
+	if not utype then return end
 	tes3.player.data.necroCraft.minions[utype][e.reference.id] = nil
 end
 
@@ -404,8 +385,7 @@ end
 
 local function onSpellTick(e)
 	local effectId = e.effectId
-	if effectId == tes3.effect.raiseSkeleton or effectId == tes3.effect.raiseBoneConstruct or effectId ==
-	tes3.effect.raiseCorpse then
+	if effectId == tes3.effect.raiseSkeleton or effectId == tes3.effect.raiseBoneConstruct or effectId == tes3.effect.raiseCorpse then
 		local raised = undead.pileToRaised(e.target) or undead.corpseToRaised(e.target)
 		if raised then
 			local utype = undead.getType(raised)
@@ -418,7 +398,7 @@ local function onSpellTick(e)
 				expected = tes3.effect.raiseCorpse
 			end
 			if effectId ~= expected then
-				tes3.removeEffects { reference = e.target, effect = effectId }
+				tes3.removeEffects{reference = e.target, effect = effectId}
 			end
 		end
 		return
@@ -429,29 +409,29 @@ local function onSpellTick(e)
 end
 
 local function test()
-	tes3.addItem { reference = tes3.player, item = "nc_skeleton_war_misc", count = 1, playSound = false }
-	tes3.addItem { reference = tes3.player, item = "nc_skeleton_weak_misc", count = 1, playSound = false }
-	tes3.addItem { reference = tes3.player, item = "nc_skeleton_champ_misc", count = 1, playSound = false }
-	tes3.addItem { reference = tes3.player, item = "nc_bonelord_misc", count = 1, playSound = false }
-	tes3.addItem { reference = tes3.player, item = "nc_boneoverlord_misc", count = 1, playSound = false }
-	tes3.addItem { reference = tes3.player, item = "nc_bonespider_misc", count = 1, playSound = false }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_RaiseSkeletonChampion" }
-	tes3.addSpell { reference = tes3.player, spell = id.spell.raiseSkeletonWarrior }
-	tes3.addSpell { reference = tes3.player, spell = id.spell.raiseSkeletonCripple }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_RaiseBoneoverlord" }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_RaiseBonelord" }
-	tes3.addSpell { reference = tes3.player, spell = id.spell.raiseBonespider }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_CallSkeletonWarrior" }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_CallSkeletonCripple" }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_CallSkeletonChampion" }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_CallBonespider" }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_CallBonelord" }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_CallBoneoverlord" }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_CallBonewalker" }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_CallGreaterBonewalker" }
-	tes3.addSpell { reference = tes3.player, spell = "NC_ME_SpreadDisease1" }
-	tes3.addSpell { reference = tes3.player, spell = "relvel_damage" }
-
+	tes3.addItem{reference=tes3.player, item="nc_skeleton_war_misc", count=1, playSound=false}
+	tes3.addItem{reference=tes3.player, item="nc_skeleton_weak_misc", count=1, playSound=false}
+	tes3.addItem{reference=tes3.player, item="nc_skeleton_champ_misc", count=1, playSound=false}
+	tes3.addItem{reference=tes3.player, item="nc_bonelord_misc", count=1, playSound=false}
+	tes3.addItem{reference=tes3.player, item="nc_boneoverlord_misc", count=1, playSound=false}
+	tes3.addItem{reference=tes3.player, item="nc_bonespider_misc", count=1, playSound=false}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_RaiseSkeletonChampion"}
+	tes3.addSpell{reference=tes3.player, spell=id.spell.raiseSkeletonWarrior}
+	tes3.addSpell{reference=tes3.player, spell=id.spell.raiseSkeletonCripple}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_RaiseBoneoverlord"}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_RaiseBonelord"}
+	tes3.addSpell{reference=tes3.player, spell=id.spell.raiseBonespider}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_CallSkeletonWarrior"}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_CallSkeletonCripple"}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_CallSkeletonChampion"}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_CallBonespider"}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_CallBonelord"}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_CallBoneoverlord"}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_CallBonewalker"}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_CallGreaterBonewalker"}
+	tes3.addSpell{reference=tes3.player, spell="NC_ME_SpreadDisease1"}
+	tes3.addSpell{reference=tes3.player, spell="relvel_damage"}
+	
 end
 
 local lastSpell
@@ -459,43 +439,36 @@ local lastShade
 
 local function onSimulate()
 
-	local currentShade = utility.isShade()
+    local currentShade = utility.isShade()
 
-	if tes3.mobilePlayer.currentSpell == lastSpell and currentShade == lastShade then
-		return
-	end
+    if tes3.mobilePlayer.currentSpell == lastSpell and currentShade == lastShade then
+        return
+    end
 
-	lastShade = currentShade
-	lastSpell = tes3.mobilePlayer.currentSpell
-	local bonus = utility.getNecromanticSpellBonus(lastSpell, lastShade)
+    lastShade = currentShade
+    lastSpell = tes3.mobilePlayer.currentSpell
+    local bonus = utility.getNecromanticSpellBonus(lastSpell, lastShade)
 
-	tes3.mobilePlayer.sound = tes3.mobilePlayer.sound - tes3.player.data.necroCraft.castBonus + bonus
-	tes3.player.data.necroCraft.castBonus = bonus
+    tes3.mobilePlayer.sound = tes3.mobilePlayer.sound - tes3.player.data.necroCraft.castBonus + bonus
+    tes3.player.data.necroCraft.castBonus = bonus
 
 end
 
 local function openPseudoInventory()
-	local container = tes3.createReference {
-		object = "NC_Transfer",
-		position = { 0, 0, 0 },
-		orientation = { 0, 0, 0 },
-		cell = "toddtest",
-	}
-	event.trigger("activate", { activator = tes3.player, target = container })
-	timer.start {
+	local container = tes3.createReference{object="NC_Transfer", position={0,0,0}, orientation={0,0,0}, cell="toddtest"}
+	event.trigger("activate", {activator = tes3.player, target = container})
+	timer.start{
 		duration = 0.2,
 		callback = function()
 			utility.safeDelete(container)
-		end,
+		end
 	}
 end
 
 local function onLoaded(e)
 	undead.init()
 	event.unregister("uiActivated", onMenuContents, { filter = "MenuContents" })
-	if tes3.player.data.necroCraft == nil then
-		tes3.player.data.necroCraft = {}
-	end
+	if tes3.player.data.necroCraft == nil then tes3.player.data.necroCraft = {} end
 	if tes3.findGlobal("NC_CorpsePreparation").value > 0 then
 		skillStatus = "active"
 		skillModule.updateSkill("NC:CorpsePreparation", { active = skillStatus })
@@ -511,12 +484,16 @@ local function onLoaded(e)
 		event.unregister("bookGetText", onBookRead)
 		event.register("bookGetText", onBookRead)
 	end
-	local necroBooks = { bk_corpsepreperation1 = false, bk_corpsepreperation2 = false, bk_corpsepreperation3 = false }
+	local necroBooks = {
+		bk_corpsepreperation1 = false,
+		bk_corpsepreperation2 = false,
+		bk_corpsepreperation3 = false
+	}
 	tes3.player.data.necroCraft.trainingBooksRead = tes3.player.data.necroCraft.trainingBooksRead or {}
 	tes3.player.data.necroCraft.necroBooks = tes3.player.data.necroCraft.necroBooks or necroBooks
 	tes3.player.data.necroCraft.replacedBooksInCell = tes3.player.data.necroCraft.replacedBooksInCell or {}
 	quests.loaded()
-	if tes3.isAffectedBy { reference = tes3.player, effect = tes3.effect.darkRitual } then
+	if tes3.isAffectedBy{reference = tes3.player, effect = tes3.effect.darkRitual} then
 		lichdom.ritualBegan()
 	elseif tes3.player.data.necroCraft.phylactery then
 		lichdom.ritualDone()
@@ -539,62 +516,40 @@ end
 
 local function onMobileActivated(e)
 	local reference = e.reference
-	if (string.startswith(reference.id, "NC_bonespider_pile") or string.startswith(reference.id, "NC_bonewolf_corpse")) and
-	not (reference.data.necroCraft and reference.data.necroCraft.isBeingRaised) then
-		tes3.playAnimation {
-			reference = reference,
-			group = tes3.animationGroup.knockOut,
-			startFlag = tes3.animationStartFlag.immediateLoop,
-		}
+	if (string.startswith(reference.id, "NC_bonespider_pile") or string.startswith(reference.id, "NC_bonewolf_corpse")) and not (reference.data.necroCraft and reference.data.necroCraft.isBeingRaised) then
+		tes3.playAnimation{reference = reference, group = tes3.animationGroup.knockOut, startFlag = tes3.animationStartFlag.immediateLoop}
 		reference.mobile.paralyze = 1
-		tes3.playAnimation {
-			reference = reference,
-			group = tes3.animationGroup.idle,
-			startFlag = tes3.animationStartFlag.normal,
-		}
+		tes3.playAnimation{reference = reference, group=tes3.animationGroup.idle, startFlag=tes3.animationStartFlag.normal}
 		return
-	elseif string.startswith(reference.id, "NC_bonewalker_corpse") or
-	string.startswith(reference.id, "NC_bonewalkerG_corpse") or string.startswith(reference.id, "NC_zombie_corpse") then
-		tes3.playAnimation {
-			reference = reference,
-			group = tes3.animationGroup.deathKnockOut,
-			startFlag = tes3.animationStartFlag.immediate,
-		}
+	elseif string.startswith(reference.id, "NC_bonewalker_corpse") or string.startswith(reference.id, "NC_bonewalkerG_corpse") or string.startswith(reference.id, "NC_zombie_corpse") then
+		tes3.playAnimation{reference = reference, group = tes3.animationGroup.deathKnockOut, startFlag = tes3.animationStartFlag.immediate}
 		reference.mobile.paralyze = 1
 		return
-		-- elseif string.startswith(reference.id, "NC_ResurrectionDummy") then
-		-- 	tes3.playAnimation{reference = reference, group = tes3.animationGroup.knockOut, startFlag = tes3.animationStartFlag.immediateLoop}
-		-- 	reference.mobile.paralyze = 1
-		-- 	tes3.playAnimation{reference = reference, group=tes3.animationGroup.idle, startFlag=tes3.animationStartFlag.normal}
-		-- 	return
+	-- elseif string.startswith(reference.id, "NC_ResurrectionDummy") then
+	-- 	tes3.playAnimation{reference = reference, group = tes3.animationGroup.knockOut, startFlag = tes3.animationStartFlag.immediateLoop}
+	-- 	reference.mobile.paralyze = 1
+	-- 	tes3.playAnimation{reference = reference, group=tes3.animationGroup.idle, startFlag=tes3.animationStartFlag.normal}
+	-- 	return
 	end
 	if undead.isRaisedByPlayer(reference) then
 		reference.mobile.fight = 0
 	end
 	if undead.getType(e.reference.object) == "bonelord" then
-		tes3.addSpell { reference = e.reference, spell = id.spell.raiseBonespider }
-		tes3.addSpell { reference = e.reference, spell = id.spell.raiseSkeleton1 }
-		tes3.addSpell { reference = e.reference, spell = id.spell.raiseSkeleton2 }
+		tes3.addSpell{reference=e.reference, spell=id.spell.raiseBonespider}
+		tes3.addSpell{reference=e.reference, spell=id.spell.raiseSkeleton1}
+		tes3.addSpell{reference=e.reference, spell=id.spell.raiseSkeleton2}
 	end
 end
+
 
 local function onItemDropped(e)
 	local pile = undead.miscToPile(e.reference)
 	if pile then
 		for _ = 1, e.reference.stackSize do
-			local new = tes3.createReference {
-				object = pile,
-				position = e.reference.position,
-				orientation = e.reference.orientation,
-				cell = tes3.getPlayerCell(),
-			}
-			tes3.playAnimation {
-				reference = new,
-				group = tes3.animationGroup.knockOut,
-				startFlag = tes3.animationStartFlag.immediateLoop,
-			}
+			local new = tes3.createReference{object = pile, position = e.reference.position, orientation = e.reference.orientation, cell=tes3.getPlayerCell()}
+			tes3.playAnimation{reference = new, group = tes3.animationGroup.knockOut, startFlag = tes3.animationStartFlag.immediateLoop}
 			if string.startswith(new.id, "NC_bonespider_pile") then
-				tes3.playAnimation { reference = new, group = tes3.animationGroup.idle, startFlag = tes3.animationStartFlag.normal }
+				tes3.playAnimation{reference = new, group=tes3.animationGroup.idle, startFlag=tes3.animationStartFlag.normal}
 			end
 			new.mobile.paralyze = 1
 		end
@@ -603,19 +558,17 @@ local function onItemDropped(e)
 end
 
 local function onCombatStart(e)
-
-	if not e.target then
-		return
-	end
+	
+	if not e.target then return end
 
 	if e.target.data and e.target.data.necroCraft and e.target.data.necroCraft.fightCasting then
 		return false
 	elseif e.actor.data and e.actor.data.necroCraft and e.actor.data.necroCraft.fightCasting then
 		return false
 	end
-
+	
 	local enemy = nil
-
+	
 	if e.target == tes3.mobilePlayer then
 		enemy = e.actor.reference
 	elseif e.actor == tes3.mobilePlayer then
@@ -623,7 +576,8 @@ local function onCombatStart(e)
 	else
 		return
 	end
-
+	
+	
 	if undead.pileToRaised(enemy) then
 		return false
 	elseif undead.corpseToRaised(enemy) then
@@ -633,7 +587,7 @@ end
 
 local function initialized(e)
 	if tes3.isModActive("Necrocraft.esp") then
-		log:info("Necrocraft.esp is active. Mod content is enabled.")
+		mwse.log("NecroCraft: Necrocraft.esp is active. Mod content is enabled")
 		utility.ashPitReplacer()
 		utility.skeletonReplacer()
 		registerGUI()
@@ -643,7 +597,7 @@ local function initialized(e)
 		event.register("itemDropped", onItemDropped)
 		event.register("damage", onDamage)
 		event.register("cellChanged", onCellChanged)
-		event.register("activate", onActivate, { priority = 201 }) -- should execute before Graphic Herbalism
+		event.register("activate", onActivate, {priority=201})	-- should execute before Graphic Herbalism
 		event.register("calcHitChance", onCalcHitChance)
 		event.register("uiObjectTooltip", onTooltipDrawn)
 		event.register("spellTick", onSpellTick)
@@ -654,7 +608,7 @@ local function initialized(e)
 		event.register("detectSneak", onDetectUndead)
 		cellEdit.init()
 	else
-		log:info("Necrocraft.esp is not active. Mod content is disabled.")
+		mwse.log("NecroCraft: Necrocraft.esp is not active. Mod content is disabled")
 	end
 end
 
