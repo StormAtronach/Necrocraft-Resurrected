@@ -61,6 +61,7 @@ edit.summonUndead = function()
 			effect.appliesOnce = true
 		end]]
 		for enchantment in tes3.iterateObjects(tes3.objectType.enchantment) do
+			---@cast enchantment tes3enchantment
 			for i, effect in pairs(enchantment.effects) do
 				if effect.id == tes3.effect.summonSkeletalMinion then
 					effect.id = tes3.effect.callSkeletonWarrior

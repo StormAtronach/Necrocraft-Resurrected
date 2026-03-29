@@ -55,9 +55,65 @@ All uses of the deprecated `mwscript` library were replaced with their modern `t
 | `mwscript.explodeSpell` | `tes3.cast{reference=caster, target=caster, spell=spell}` | `aiAction.lua` |
 | `mwscript.playSound` | `tes3.playSound` | `main.lua` |
 | `mwscript.addTopic` | `tes3.addTopic` | `main.lua` |
-| `mwscript.disable` | `tes3.getReference(id):disable()` | `quests.lua` |
+| `mwscript.disable` | `ref = tes3.getReference(id); if ref then ref:disable() end` | `quests.lua` |
 | `mwscript.addToLevItem` | `tes3leveledItem:insert(item, level)` | `main.lua` |
 | `mwscript.hasItemEquipped` | `tes3actor:hasItemEquipped(item)` | `lichdom.lua` |
+
+---
+
+## Logging
+
+Replaced all `mwse.log(...)` calls with `mwse.Logger.new()` per-file loggers, following the modern MWSE logging pattern. Each file that had log output now declares `local log = mwse.Logger.new()` at the top. All loggers in a mod share the same level setting automatically.
+
+| File | Calls replaced | Level assigned |
+| --- | --- | --- |
+| `main.lua` | ESP active/inactive startup messages | `log:info` |
+| `aiAction.lua` | "No valid spell found" warnings (×4) | `log:warn` |
+| `utility.lua` | Minion dump in `logMinions` | `log:debug` |
+| `magic/edit.lua` | Config flag reporting at init | `log:debug` |
+
+The mod-wide log level is now exposed in the MCM (Settings category) via `settings:createLogLevelOptions`. The selected level is saved to config as `logLevel` (default `mwse.logLevel.info`) and applied on startup in the `modConfigReady` handler.
+
+---
+
+## Bug Fixes (Second Pass)
+
+### `magic/effects.lua`
+
+- **Wrong `onTick` handler name for Spread Disease:** `effects.onTick.onSpreadDisease` → `effects.onTick.spreadDisease`. The `on` prefix doesn't exist on the function in `onTick.lua`. The callback resolved to `nil`, silently disabling the entire Spread Disease mechanic.
+
+### `quests.lua`
+
+- **Nil crash on load for out-of-cell references:** `tes3.getReference(id):disable()` crashes if the reference is in an unloaded cell (returns `nil`). Added nil guards for both `nc_sc_theranasload` and `nc_chest_vsl_dest`.
+
+### `main.lua`
+
+- **`tes3.isAffectedBy` passed `.mobile` instead of reference (line 211):** `reference = activationRef.mobile` (a `tes3mobileActor`) → `reference = activationRef`. Every other call site passes the reference directly.
+- **`corpsePreparationGlobal` nil guard:** `corpsePreparationGlobal.value == 1` could crash if the global doesn't exist. Added `corpsePreparationGlobal and` guard.
+
+### `undead.lua` (Bug Fixes)
+
+- **Nil crash in `handleFollow` when caster left the cell:** After resolving a string caster ID with `tes3.getReference`, the result was never checked before accessing `.id` on the next line. Added `if not caster then return end`.
+
+### `soulGem.lua`
+
+- **`countEmpty` zero check used Lua falsy test:** `if not soulGemLib.countEmpty{...}` — in Lua, `0` is truthy so `not 0` is `false`. The guard never fired when count was 0, allowing soul capture without an empty gem. Fixed to `if not emptyCount or emptyCount == 0`.
+- **`onMenuInventorySelect` nil crash:** `block:findChild(...)` can return `nil` for non-item UI blocks (separators etc.). `item.text` would crash. Added `if item and` guard.
+
+### `crafting/recipes.lua`
+
+- **Wolf `craftCallback` passed wrong data to event:** The wolf recipe's `craftCallback` triggered `Necrocraft:CorpsePrepared` with `params.reference` (a raw `tes3reference`) instead of `data` (the full crafting framework table). The handler in `corpsePreparation.lua` expects `eventData.reference`, which would be nil on a raw reference, causing a crash when preparing a wolf corpse. Fixed to match the humanoid callback pattern.
+
+### `lichdom.lua`
+
+- **`phylactery.container` field path typo:** `tes3.player.data.necroCraft.container` → `tes3.player.data.necroCraft.phylactery.container`. The `elseif` branch in `updateContainer` that clears phylactery data when the item is removed from the container always evaluated to false, making it impossible to unset the phylactery.
+- **`tes3.getObject` used instead of `tes3.getReference` for phylactery container:** `tes3.getObject` returns the base object (static default inventory), not the specific placed container reference the player filled with items. Changed to `tes3.getReference`. Also added a nil guard, and corrected downstream `tes3.removeItem` and `tes3.cast` calls to pass the reference directly instead of `container.id`.
+
+### `magic/onTick.lua` (Bug Fixes)
+
+- **Shadowed `local effect` declaration:** `local effect = params.effect` was immediately shadowed by a second `local effect` declaration three lines later. The first was dead code (callers never pass `effect`). Removed.
+- **`local cell` unused in `raiseUndead`:** `tes3.getPlayerCell()` was called and stored in a local that was never used — each inner raise function defines its own `local cell`. Removed.
+- **`"swamp fever"` duplicated in `diseasesTable`:** Appeared at indices 1 and 5, giving it double probability compared to all other diseases. Removed the duplicate.
 
 ---
 
