@@ -4,7 +4,7 @@ local utility = require("NecroCraft.utility")
 local edit = require("NecroCraft.magic.edit")
 local id = require("NecroCraft.magic.id")
 
-spells = {}
+local spells = {}
 
 local function registerSpells()
 
@@ -17,7 +17,7 @@ local function registerSpells()
 		max = 20,
 		radius = 3
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.spreadDisease,
 		name = strings.spreadDisease1,
@@ -31,56 +31,56 @@ local function registerSpells()
 		effect = tes3.effect.callSkeletonCripple,
 		range = tes3.effectRange.self,
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.callSkeletonWarrior,
 		name = strings.callSkeletonWarrior,
 		effect = tes3.effect.callSkeletonWarrior,
 		range = tes3.effectRange.self,
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.callSkeletonChampion,
 		name = strings.callSkeletonChampion,
 		effect = tes3.effect.callSkeletonChampion,
 		range = tes3.effectRange.self,
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.callBonespider,
 		name = strings.callBonespider,
 		effect = tes3.effect.callBonespider,
 		range = tes3.effectRange.self,
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.callBonelord,
 		name = strings.callBonelord,
 		effect = tes3.effect.callBonelord,
 		range = tes3.effectRange.self,
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.callBoneoverlord,
 		name = strings.callBoneoverlord,
 		effect = tes3.effect.callBoneoverlord,
 		range = tes3.effectRange.self,
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.callBonewalker,
 		name = strings.callBonewalker,
 		effect = tes3.effect.callBonewalker,
 		range = tes3.effectRange.self,
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.callGreaterBonewalker,
 		name = strings.callGreaterBonewalker,
 		effect = tes3.effect.callGreaterBonewalker,
 		range = tes3.effectRange.self,
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.raiseSkeleton1,
 		name = strings.raiseSkeletonCripple,
@@ -89,7 +89,7 @@ local function registerSpells()
 		min = 3,
 		max = 3
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.raiseSkeleton2,
 		name = strings.raiseSkeletonWarrior,
@@ -98,7 +98,7 @@ local function registerSpells()
 		min = 7,
 		max = 7
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.raiseSkeleton3,
 		name = strings.raiseSkeletonChampion,
@@ -107,7 +107,7 @@ local function registerSpells()
 		min = 10,
 		max = 10
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.lichResurrection,
 		name = strings.lichResurrection,
@@ -116,7 +116,7 @@ local function registerSpells()
 		min = 100,
 		max = 100
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.raiseCorpse1,
 		name = strings.raiseCorpse1,
@@ -125,8 +125,8 @@ local function registerSpells()
 		min = 5,
 		max = 5
 	})
-	
-	magickaExpanded.spells.createBasicSpell({	
+
+	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.raiseCorpse2,
 		name = strings.raiseCorpse2,
 		effect = tes3.effect.raiseCorpse,
@@ -134,8 +134,8 @@ local function registerSpells()
 		min = 8,
 		max = 8
 	})
-	
-	magickaExpanded.spells.createBasicSpell({	
+
+	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.raiseCorpse3,
 		name = strings.raiseCorpse3,
 		effect = tes3.effect.raiseCorpse,
@@ -143,7 +143,7 @@ local function registerSpells()
 		min = 25,
 		max = 25
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.raiseBonespider,
 		name = strings.raiseBoneSpider,
@@ -178,7 +178,7 @@ local function registerSpells()
 		range = tes3.effectRange.self,
 		duration = 60
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = "dispelO",
 		name = "dispel",
@@ -195,7 +195,7 @@ local function registerSpells()
 		effect = tes3.effect.communeDead,
 		range = tes3.effectRange.self,
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.heartAttack,
 		name = strings.heartAttack,
@@ -205,7 +205,7 @@ local function registerSpells()
 		min = 120,
 		max = 120
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.convulsion,
 		name = strings.convulsion,
@@ -215,7 +215,7 @@ local function registerSpells()
 		min = 180,
 		max = 180
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.feintDeath1,
 		name = strings.feintDeath1,
@@ -223,7 +223,7 @@ local function registerSpells()
 		range = tes3.effectRange.self,
 		duration = 10,
 	})
-	
+
 	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.feintDeath2,
 		name = strings.feintDeath2,
@@ -239,7 +239,7 @@ local function registerSpells()
 		range = tes3.effectRange.touch,
 		duration = 60,
 	})
-	
+
 	--[[magickaExpanded.spells.createBasicSpell({
 		id = "ritual",
 		name = "Darkest Ritual",
@@ -247,7 +247,7 @@ local function registerSpells()
 		range = tes3.effectRange.self,
 		duration = 10,
 	})]]
-	
+
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.darkestRitual,
 		name = strings.darkestRitual,
@@ -302,7 +302,7 @@ local function registerSpells()
 			},
 		}
 	})
-	
+
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.touchOfAgony,
 		name = strings.touchOfAgony,
@@ -323,7 +323,7 @@ local function registerSpells()
 			},
 		}
 	})
-	
+
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.pain,
 		name = strings.pain,
@@ -344,7 +344,7 @@ local function registerSpells()
 			},
 		}
 	})
-	
+
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.agony,
 		name = strings.agony,
@@ -365,7 +365,7 @@ local function registerSpells()
 			},
 		}
 	})
-	
+
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.souldrinker,
 		name = strings.souldrinker,
@@ -398,7 +398,7 @@ local function registerSpells()
 			}
 		}
 	})
-	
+
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.massReanimation,
 		name = strings.massReanimation,
@@ -427,7 +427,7 @@ local function registerSpells()
 			},
 		}
 	})
-	
+
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.massSkeletal,
 		name = strings.massReanimation,

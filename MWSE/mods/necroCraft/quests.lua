@@ -121,9 +121,9 @@ local function onTelescopeUse()
     tes3.setPlayerControlState({enabled = false})
     tes3.fadeOut()
     timer.start{
-        type = timer.real, 
+        type = timer.real,
         duration = 1,
-        callback = function() 
+        callback = function()
             tes3.advanceTime{ hours = 3 }
             tes3.fadeIn()
             tes3.setPlayerControlState({enabled = true})
@@ -176,9 +176,12 @@ local function startMagesVsSkeletonsCombat(cell)
 	for creature in cell:iterateReferences(tes3.objectType.creature) do
 		if creature.baseObject.id:lower() == "nc_skeleton_prank" then
 			for mageID, position in pairs(WHMages) do
-				mage = tes3.getReference(mageID)
+				local mage = tes3.getReference(mageID)
 				--creature.mobile:startCombat(mage)
-				mage.mobile:startCombat(creature.mobile)
+				if mage.mobile and mage.mobile.actorType == tes3.actorType.creature then
+					---@cast mage tes3creatureInstance
+					mage.mobile:startCombat(creature.mobile)
+				end
 			end
 		end
 	end
@@ -230,7 +233,7 @@ local function onCellChanged(e)
 			tes3.player.data.necroCraft.questStage = 2
 		end
 	elseif tes3.player.data.necroCraft.questStage == 2 then
-		if tes3.getJournalIndex{id="NC_HelpUlverC"} == 100 then 
+		if tes3.getJournalIndex{id="NC_HelpUlverC"} == 100 then
 			if e.cell.id == "Sadrith Mora, Wolverine Hall: Imperial Shrine" then
 					killSkeletons(e.cell)
 			elseif e.previousCell.id == "Sadrith Mora, Wolverine Hall: Imperial Shrine" then

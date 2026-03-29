@@ -1,7 +1,7 @@
 local magickaExpanded = require("OperatorJack.MagickaExpanded.magickaExpanded")
 local id = require("NecroCraft.magic.id")
 
-grimoires = {}
+local grimoires = {}
 
 local function registerGrimoires()
 
@@ -18,21 +18,21 @@ local function registerGrimoires()
             id.spell.raiseSkeleton1,
         }
 	})
-	
+
 	magickaExpanded.grimoires.registerGrimoire({
 		id = id.grimoire.raiseSkeleton2,
 		spellIds = {
             id.spell.raiseSkeleton2,
         }
 	})
-	
+
 	magickaExpanded.grimoires.registerGrimoire({
 		id = id.grimoire.raiseSkeleton3,
 		spellIds = {
             id.spell.raiseSkeleton3,
         }
 	})
-	
+
 	magickaExpanded.grimoires.registerGrimoire({
 		id = id.grimoire.raiseBonespider,
 		spellIds = {
@@ -46,28 +46,28 @@ local function registerGrimoires()
             id.spell.raiseBonelord,
         }
 	})
-	
+
 	magickaExpanded.grimoires.registerGrimoire({
 		id = id.grimoire.raiseBoneoverlord,
 		spellIds = {
             id.spell.raiseBoneoverlord,
         }
 	})
-	
+
 	magickaExpanded.grimoires.registerGrimoire({
 		id = id.grimoire.raiseCorpse1,
 		spellIds = {
             id.spell.raiseCorpse1,
         }
 	})
-	
+
 	magickaExpanded.grimoires.registerGrimoire({
 		id = id.grimoire.raiseCorpse2,
 		spellIds = {
            id.spell.raiseCorpse2,
         }
 	})
-	
+
 	magickaExpanded.grimoires.registerGrimoire({
 		id = id.grimoire.raiseCorpse3,
 		spellIds = {
@@ -80,8 +80,8 @@ local function registerGrimoires()
 		spellIds = {
             id.spell.darkestRitual,
         }
-	})	
-	
+	})
+
 end
 
 event.register("MagickaExpanded:Register", registerGrimoires)

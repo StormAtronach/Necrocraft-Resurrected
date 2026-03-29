@@ -14,11 +14,11 @@ edit.createUndead = function(e)
 	local spell = e.source
 	local creature = nil
 	e.source.effects[e.effectIndex + 1].duration = 0
-	
+
 	-- prevents from firing the same event twice for the same caster and effect
 	if effectsResolved[caster] == nil then
 		effectsResolved[caster] = {}
-	elseif effectsResolved[caster][e.effectId] then 
+	elseif effectsResolved[caster][e.effectId] then
 		return
 	end
 	effectsResolved[caster][e.effectId] = true
@@ -35,7 +35,7 @@ edit.createUndead = function(e)
 	elseif e.effectId == tes3.effect.summonBonelord then
 		creature = "bonelord"
 	end
-	
+
 	creature = utility.placeInFront(caster, creature, 150)
 	tes3.setAIFollow{reference = creature, target = caster}
 end
@@ -49,8 +49,8 @@ local function getSummonUndeadEffect(spell)
 end
 
 edit.summonUndead = function()
-	if not common.config.editSummonUndeadEffects and not common.config.replaceSummonUndeadSpells then 
-		return 
+	if not common.config.editSummonUndeadEffects and not common.config.replaceSummonUndeadSpells then
+		return
 	end
 	mwse.log("NecroCraft: editSummonUndeadEffects: %s", common.config.editSummonUndeadEffects)
 	mwse.log("NecroCraft: replaceSummonUndeadSpells: %s", common.config.replaceSummonUndeadSpells)
@@ -66,7 +66,7 @@ edit.summonUndead = function()
 					effect.duration = 0
 				elseif effect.id == tes3.effect.summonBonewalker then
 					effect.id = tes3.effect.callBonewalker
-					effect.duration = 0 
+					effect.duration = 0
 				elseif effect.id == tes3.effect.summonGreaterBonewalker then
 					effect.id = tes3.effect.callGreaterBonewalker
 					effect.duration = 0
@@ -74,10 +74,11 @@ edit.summonUndead = function()
 					effect.id = tes3.effect.callBonelord
 					effect.duration = 0
 				end
-			end 
+			end
 		end
 	end
 	for spell in tes3.iterateObjects(tes3.objectType.spell) do
+		---@cast spell tes3spell
 		local effect = getSummonUndeadEffect(spell)
 		if effect then
 			if common.config.editSummonUndeadEffects then
@@ -85,33 +86,34 @@ edit.summonUndead = function()
 			end
 			if common.config.replaceSummonUndeadSpells then
 				for npc in tes3.iterateObjects(tes3.objectType.npc) do
+					---@cast npc tes3npc
 					if npc == tes3.player.object or npc == tes3.player.baseObject then
 					elseif npc.spells:contains(spell) then
-						ref = npc.id:lower()
+						local ref = npc.id:lower()
 						if common.config.necromancers[ref] then
 							-- Necromancers have summon undead and call undead spells
 							-- They can both teach the player and "create" new undead once a day
 							if effect == tes3.effect.summonSkeletalMinion then
-								npc.spells:add(tes3.getObject(id.spell.callSkeletonWarrior))
+								tes3.addSpell{actor = npc, spell = id.spell.callSkeletonWarrior, updateGUI = false}
 							elseif effect == tes3.effect.summonBonewalker then
-								npc.spells:add(tes3.getObject(id.spell.callBonewalker))
+								tes3.addSpell{actor = npc, spell = id.spell.callBonewalker, updateGUI = false}
 							elseif effect == tes3.effect.summonGreaterBonewalker then
-								npc.spells:add(tes3.getObject(id.spell.callGreaterBonewalker))
+								tes3.addSpell{actor = npc, spell = id.spell.callGreaterBonewalker, updateGUI = false}
 							elseif effect == tes3.effect.summonBonelord then
-								npc.spells:add(tes3.getObject(id.spell.callBonelord))
+								tes3.addSpell{actor = npc, spell = id.spell.callBonelord, updateGUI = false}
 							end
 						elseif common.config.summonTeachers[ref] then
 							-- Summon teachers only teach player how to summon undead but don't do it themselves
 							-- They have only call undead spells
-							npc.spells:remove(spell)
+							tes3.removeSpell{actor = npc, spell = spell, updateGUI = false}
 							if effect == tes3.effect.summonSkeletalMinion then
-								npc.spells:add(tes3.getObject(id.spell.callSkeletonWarrior))
+								tes3.addSpell{actor = npc, spell = id.spell.callSkeletonWarrior, updateGUI = false}
 							elseif effect == tes3.effect.summonBonewalker then
-								npc.spells:add(tes3.getObject(id.spell.callBonewalker))
+								tes3.addSpell{actor = npc, spell = id.spell.callBonewalker, updateGUI = false}
 							elseif effect == tes3.effect.summonGreaterBonewalker then
-								npc.spells:add(tes3.getObject(id.spell.callGreaterBonewalker))
+								tes3.addSpell{actor = npc, spell = id.spell.callGreaterBonewalker, updateGUI = false}
 							elseif effect == tes3.effect.summonBonelord then
-								npc.spells:add(tes3.getObject(id.spell.callBonelord))
+								tes3.addSpell{actor = npc, spell = id.spell.callBonelord, updateGUI = false}
 							end
 						else
 							-- Everyone else use summon daedra instead of summon undead
@@ -119,13 +121,13 @@ edit.summonUndead = function()
 							-- bonewalker -> scamp
 							-- greater bonewalker -> clanfear
 							-- bonelord -> fire atronach
-							npc.spells:remove(spell)
+							tes3.removeSpell{actor = npc, spell = spell, updateGUI = false}
 							if effect == tes3.effect.summonSkeletalMinion or effect == tes3.effect.summonBonewalker then
-								npc.spells:add(tes3.getObject("summon scamp"))
+								tes3.addSpell{actor = npc, spell = "summon scamp", updateGUI = false}
 							elseif effect == tes3.effect.summonGreaterBonewalker then
-								npc.spells:add(tes3.getObject("summon clanfear"))
+								tes3.addSpell{actor = npc, spell = "summon clanfear", updateGUI = false}
 							elseif effect == tes3.effect.summonBonelord then
-								npc.spells:add(tes3.getObject("summon flame atronach"))
+								tes3.addSpell{actor = npc, spell = "summon flame atronach", updateGUI = false}
 							end
 						end
 					end
@@ -138,9 +140,10 @@ end
 edit.playerSummonUndead = function()
 	if common.config.replaceSummonUndeadSpells then
 		for _, spell in pairs(tes3.mobilePlayer.object.spells) do
+			---@cast spell tes3spell
 			local effect = getSummonUndeadEffect(spell)
 			if effect then
-				tes3.mobilePlayer.object.spells:remove(spell)
+				tes3.removeSpell{reference = tes3.mobilePlayer, spell = spell}
 				if effect == tes3.effect.summonSkeletalMinion then
 					--tes3.mobilePlayer.object.spells:add(tes3.getObject(id.spell.callSkeletonWarrior))
 					tes3.addSpell{reference = tes3.mobilePlayer, spell=id.spell.callSkeletonWarrior}
@@ -157,7 +160,7 @@ edit.playerSummonUndead = function()
 			end
 		end
 	end
-end 
+end
 
 edit.sharn = function(e)
 	if e.topic ~= "MG_Sharn_Necro" and e.index < 10 then return end
@@ -193,38 +196,38 @@ local alreadyEdited = {}
 
 
 local function addFirstTierNecroSpells(actorId)
-	local actor = tes3.getObject(actorId)
-	actor.spells:add(tes3.getObject(id.spell.raiseCorpse1))
-	actor.spells:add(tes3.getObject(id.spell.raiseSkeleton1))
-	actor.spells:add(tes3.getObject(id.spell.raiseBonespider))
-	-- actor.spells:add(tes3.getObject(id.spell.blackSoulTrap1))
-	actor.spells:add(tes3.getObject(id.spell.callBonespider))
-	actor.spells:add(tes3.getObject(id.spell.callSkeletonCripple))
+	local actor = tes3.getObject(actorId) --[[@as tes3npc]]
+	tes3.addSpell{actor = actor, spell = id.spell.raiseCorpse1, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseSkeleton1, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseBonespider, updateGUI = false}
+	-- tes3.addSpell{actor = actor, spell = id.spell.blackSoulTrap1, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.callBonespider, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.callSkeletonCripple, updateGUI = false}
 	alreadyEdited[actorId:lower()] = true
 end
 
 local function addSecondTierNecroSpells(actorId)
-	local actor = tes3.getObject(actorId)
-	actor.spells:add(tes3.getObject(id.spell.raiseCorpse1))
-	actor.spells:add(tes3.getObject(id.spell.raiseSkeleton1))
-	actor.spells:add(tes3.getObject(id.spell.raiseBonespider))
-	actor.spells:add(tes3.getObject(id.spell.raiseBonelord))
-	actor.spells:add(tes3.getObject(id.spell.raiseCorpse2))
-	actor.spells:add(tes3.getObject(id.spell.raiseSkeleton2))
+	local actor = tes3.getObject(actorId) --[[@as tes3npc]]
+	tes3.addSpell{actor = actor, spell = id.spell.raiseCorpse1, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseSkeleton1, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseBonespider, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseBonelord, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseCorpse2, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseSkeleton2, updateGUI = false}
 	alreadyEdited[actorId:lower()] = true
-	-- actor.spells:add(tes3.getObject(id.spell.blackSoulTrap2))
+	-- tes3.addSpell{actor = actor, spell = id.spell.blackSoulTrap2, updateGUI = false}
 end
 
 local function addThirdTierNecroSpells(actorId)
-	local actor = tes3.getObject(actorId)
-	actor.spells:add(tes3.getObject(id.spell.raiseCorpse2))
-	actor.spells:add(tes3.getObject(id.spell.raiseCorpse3))
-	actor.spells:add(tes3.getObject(id.spell.raiseSkeleton2))
-	actor.spells:add(tes3.getObject(id.spell.raiseSkeleton3))
-	actor.spells:add(tes3.getObject(id.spell.raiseBonelord))
-	actor.spells:add(tes3.getObject(id.spell.raiseBoneoverlord))
+	local actor = tes3.getObject(actorId) --[[@as tes3npc]]
+	tes3.addSpell{actor = actor, spell = id.spell.raiseCorpse2, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseCorpse3, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseSkeleton2, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseSkeleton3, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseBonelord, updateGUI = false}
+	tes3.addSpell{actor = actor, spell = id.spell.raiseBoneoverlord, updateGUI = false}
 	alreadyEdited[actorId:lower()] = true
-	-- actor.spells:add(tes3.getObject(id.spell.blackSoulTrap2))
+	-- tes3.addSpell{actor = actor, spell = id.spell.blackSoulTrap2, updateGUI = false}
 end
 
 edit.necromancers = function()
@@ -234,11 +237,11 @@ edit.necromancers = function()
 	spell.effects[4] = spell.effects[3]
 	spell.effects[4].id = tes3.effect.spreadDisease
 	-- First tier
-	local npc = tes3.getObject("Dedaenc")
-	npc.spells:remove(tes3.getObject("vivec's feast"))
-	npc.spells:remove(tes3.getObject("sotha's mirror"))
-	npc.spells:remove(tes3.getObject("invisibility"))
-	npc.spells:add(tes3.getObject("calm humanoid"))
+	local npc = tes3.getObject("Dedaenc") --[[@as tes3npc]]
+	tes3.removeSpell{actor = npc, spell = "vivec's feast", updateGUI = false}
+	tes3.removeSpell{actor = npc, spell = "sotha's mirror", updateGUI = false}
+	tes3.removeSpell{actor = npc, spell = "invisibility", updateGUI = false}
+	tes3.addSpell{actor = npc, spell = "calm humanoid", updateGUI = false}
 	addFirstTierNecroSpells(npc.id)
 	addFirstTierNecroSpells("daris adram")
 	addFirstTierNecroSpells("treras dres")
@@ -249,16 +252,16 @@ edit.necromancers = function()
 	addSecondTierNecroSpells("Koffutto Gilgar")
 	-- Third tier
 	addThirdTierNecroSpells("sorkvild the raven")
-	npc = tes3.getObject("sorkvild the raven")
-	npc.spells:remove(tes3.getObject(id.spell.deathPact))
+	npc = tes3.getObject("sorkvild the raven") --[[@as tes3npc]]
+	tes3.removeSpell{actor = npc, spell = id.spell.deathPact, updateGUI = false}
 	addThirdTierNecroSpells("Goris the Maggot King")
 	addThirdTierNecroSpells("Delvam Andarys")
-	npc = tes3.getObject("Delvam Andarys")
-	npc.spells:remove(tes3.getObject(id.spell.communeDead))
+	npc = tes3.getObject("Delvam Andarys") --[[@as tes3npc]]
+	tes3.removeSpell{actor = npc, spell = id.spell.communeDead, updateGUI = false}
 
 	for id, _ in pairs(common.config.necromancers) do
 		if not alreadyEdited[id] then
-			npc = tes3.getObject(id)
+			npc = tes3.getObject(id) --[[@as tes3npc]]
 			if npc then
 				if npc.level  < 10 then
 					-- mwse.log("Adding first tier to %s", npc.id)

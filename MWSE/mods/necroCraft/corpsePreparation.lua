@@ -99,6 +99,7 @@ this.onCorpseContents = function(ev, reference)
 	end
 	buttonSwitch(button, corpseType)
 	local doOnce = function(e)
+		---@cast button tes3uiElement
 		button:unregister("mouseClick", doOnce)
 		local behaviour = button.text
 		tes3ui.leaveMenuMode()
@@ -148,11 +149,9 @@ this.onCorpseContents = function(ev, reference)
 	button:register("mouseClick", doOnce)
 end
 
-event.register("Necrocraft:CorpseDestroyed", function() 
+event.register("Necrocraft:CorpseDestroyed", function()
 	bones.harvest("skeletonWarrior")
 	practiceSkill(0)
 end)
 
 return this
-
-

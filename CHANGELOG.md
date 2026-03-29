@@ -13,7 +13,7 @@
 - **`restoreCombat` used string instead of reference (line 154):** `actor = actor.object.id` overwrote the reference variable with a string ID before passing it to `startCombat`, which expects a reference object. After a necromancer's cast routine temporarily stopped their combat, hostile actors were never properly re-engaged.
 - **Spell fired three times per cast (lines 178–197):** `tes3.cast` / `mwscript.explodeSpell` was scheduled at 0.4s, 0.5s, and 0.6s timers. All three fired, hitting the target three times. The redundant 0.4s and 0.5s timer blocks were removed, keeping only the 0.6s cast.
 
-### `main.lua`
+### `main.lua` (Bug Fixes)
 
 - **`fightCastiong` typo (lines 560, 562):** `fightCastiong` → `fightCasting`. The field set in `aiAction.cast` is `fightCasting`. Because of the typo the `onCombatStart` guard never fired, allowing NPCs to be re-engaged by other combatants during the casting window and breaking the cast routine.
 
@@ -29,7 +29,7 @@
 
 - **`getType` O(n) → O(1):** Replaced the `undeadTable` + `pairs()` loop (iterating 11 entries with mesh string comparison on every call) with a `meshToType` reverse lookup table populated once in `undead.init`. `getType` now resolves in O(1).
 
-### `main.lua`
+### `main.lua` (Performance)
 
 - **`bookGetText` event handler leak:** `event.register("bookGetText", onBookRead)` in the active skill branch was missing a prior `event.unregister`. On each game load in that state, a new handler was stacked. Added the corresponding `unregister` call before re-registering.
 - **`onCalcHitChance` — removed `tes3.isAffectedBy{}` table allocation:** Replaced `tes3.isAffectedBy{reference = e.target, effect = tes3.effect.feintDeath}` with a direct `e.target.data.necroCraft and e.target.data.necroCraft.feintDeath` check. Avoids a table allocation and a C++ boundary crossing on every attack. Consistent with how `onSpellResist` already handled the same check.
@@ -47,7 +47,7 @@
 All uses of the deprecated `mwscript` library were replaced with their modern `tes3` equivalents.
 
 | `mwscript` function | Replacement | Files affected |
-|---|---|---|
+| --- | --- | --- |
 | `mwscript.addSpell` | `tes3.addSpell` | `main.lua`, `lichdom.lua`, `magic/edit.lua`, `magic/onTick.lua` |
 | `mwscript.getDistance` | `ref.position:distance(other.position)` | `aiAction.lua` (×8), `main.lua` |
 | `mwscript.stopCombat` | `mobile:stopCombat()` | `aiAction.lua`, `quests.lua` |
@@ -58,3 +58,25 @@ All uses of the deprecated `mwscript` library were replaced with their modern `t
 | `mwscript.disable` | `tes3.getReference(id):disable()` | `quests.lua` |
 | `mwscript.addToLevItem` | `tes3leveledItem:insert(item, level)` | `main.lua` |
 | `mwscript.hasItemEquipped` | `tes3actor:hasItemEquipped(item)` | `lichdom.lua` |
+
+---
+
+## `spells:add` / `spells:remove` → `tes3.addSpell` / `tes3.removeSpell`
+
+All direct spell list mutations in `magic/edit.lua` were replaced with the MWSE API equivalents. Key differences:
+
+- **`actor =` instead of `reference =`** — the targets here are base NPC objects (from `tes3.getObject` / `tes3.iterateObjects`), not live references. The `actor` parameter is the correct one for base actor manipulation.
+- **`updateGUI = false`** — all replacements are init-time batch operations. Passing `updateGUI = false` avoids a redundant GUI refresh on every individual call.
+- **String IDs passed directly** — `tes3.getObject()` wrappers removed since both APIs accept spell ID strings natively.
+- **`---@cast` / `--[[@as]]` annotations** — added to help the Lua language server narrow the broad `tes3object` return type of `tes3.iterateObjects` and `tes3.getObject` to the correct specific types (`tes3npc`, `tes3spell`), resolving type warnings without any runtime cost.
+
+### Functions updated in `magic/edit.lua`
+
+| Function | Changes |
+| --- | --- |
+| `edit.summonUndead` | All `npc.spells:add` → `tes3.addSpell{actor=npc, ...}`, all `npc.spells:remove` → `tes3.removeSpell{actor=npc, ...}` |
+| `edit.playerSummonUndead` | `tes3.mobilePlayer.object.spells:remove` → `tes3.removeSpell{reference=tes3.mobilePlayer, ...}` (uses `reference =` since the player is a live actor) |
+| `addFirstTierNecroSpells` | All `actor.spells:add(tes3.getObject(...))` → `tes3.addSpell{actor=actor, spell=..., updateGUI=false}` |
+| `addSecondTierNecroSpells` | Same as above |
+| `addThirdTierNecroSpells` | Same as above |
+| `edit.necromancers` | All `npc.spells:add` / `npc.spells:remove` → `tes3.addSpell` / `tes3.removeSpell` with `actor=npc` |
