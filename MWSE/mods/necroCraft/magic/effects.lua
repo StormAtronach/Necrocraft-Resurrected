@@ -499,7 +499,7 @@ local function addSpreadDiseaseEffect()
 
 		icon = "s\\Tx_S_Drain_Fati.dds",
 
-		onTick = effects.onTick.onSpreadDisease,
+		onTick = effects.onTick.spreadDisease,
 	})
 end
 

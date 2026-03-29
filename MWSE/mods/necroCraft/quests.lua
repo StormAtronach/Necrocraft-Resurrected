@@ -358,10 +358,12 @@ quests.loaded = function()
 		event.register("journal", magic.edit.sharn)
 	end
 	if tes3.getJournalIndex{id="NC_HelpSorkvildT"} < 100 then
-		tes3.getReference("nc_sc_theranasload"):disable()
+		local theranasload = tes3.getReference("nc_sc_theranasload")
+		if theranasload then theranasload:disable() end
 	end
 	if tes3.getJournalIndex{id="NC_HelpDelvam"} < 10 then
-		tes3.getReference("nc_chest_vsl_dest"):disable()
+		local vslDest = tes3.getReference("nc_chest_vsl_dest")
+		if vslDest then vslDest:disable() end
 	end
 	event.unregister("spellResist", onOthrilResist)
 	if tes3.getJournalIndex{id="NC_HelpFaram"} == 10 then

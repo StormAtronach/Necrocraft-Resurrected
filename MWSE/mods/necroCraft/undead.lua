@@ -27,6 +27,7 @@ end
 
 undead.handleFollow = function(caster, raised)
 	caster = caster.id and caster or tes3.getReference(caster)
+	if not caster then return end
 	if caster == tes3.player or tes3.player.data.necroCraft.minions.bonelord[caster.id] or tes3.player.data.necroCraft.minions.boneoverlord[caster.id] then
 		raised.mobile.fight = 0
 		local utype = undead.getType(raised.object)

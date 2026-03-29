@@ -208,7 +208,7 @@ local function onActivate(e)
 		return false
 	end
 	if activationRef.baseObject.objectType == tes3.objectType.npc or activationRef.baseObject.objectType == tes3.objectType.creature then
-		if tes3.isAffectedBy{reference = activationRef.mobile, effect = tes3.effect.feintDeath} then
+		if tes3.isAffectedBy{reference = activationRef, effect = tes3.effect.feintDeath} then
 			return false
 		end
 	end
