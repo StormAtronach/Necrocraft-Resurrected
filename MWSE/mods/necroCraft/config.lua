@@ -33,12 +33,6 @@ local defaultConfig = {
 	}
 }
 
-for npc in tes3.iterateObjects(tes3.objectType.npc) do
-	if npc.class.id == "Necromancer" then
-		defaultConfig.necromancers[npc.id:lower()] = true
-	end
-end
-
 local mwseConfig = mwse.loadConfig("NecroCraft", defaultConfig)
 
 return mwseConfig;

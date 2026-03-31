@@ -62,6 +62,10 @@ strings.noGreaterBonewalker = "You don't have any Greater Bonewalkers ready for 
 strings.callBonewalkerDesc = "Summons one of the previously raised Bonewalkers, which is currently not following the caster."
 strings.callGreaterBonewalkerDesc = "Summons one of the previously raised Greater Bonewalkers, which is currently not following the caster."
 
+strings.dismissUndead = "Dismiss Undead"
+strings.dismissUndeadDesc = "Kills one of your undead minions, returning it to a dormant corpse. The minion can still be resummoned afterwards."
+strings.dismissFail = "This target is not one of your undead minions."
+
 strings.raiseFail = "Your spell isn't strong enough to raise "
 
 strings.raiseSkeleton = "Raise Skeletal Minion"

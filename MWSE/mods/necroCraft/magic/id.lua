@@ -45,6 +45,7 @@ id.spell.souldrinker = "NC_ME_SoulDrinker"
 
 id.spell.corruptSoulgem = "NC_ME_CorruptSoulgem"
 id.spell.concealUndead = "NC_ME_ConcealUndead"
+id.spell.dismissUndead = "NC_ME_DismissUndead"
 
 id.grimoire.raiseCorpse1 = "nc_bk_corpse1"
 id.grimoire.raiseCorpse2 = "nc_bk_corpse2"

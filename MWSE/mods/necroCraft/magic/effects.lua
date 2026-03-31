@@ -30,6 +30,7 @@ tes3.claimSpellEffectId("feintDeath", 673)
 tes3.claimSpellEffectId("concealUndead", 674)
 tes3.claimSpellEffectId("summonSpirit", 675)
 tes3.claimSpellEffectId("boneBinding", 676)
+tes3.claimSpellEffectId("dismissUndead", 677)
 
 local blackSoulgemVersion = {
 	Misc_SoulGem_Grand = "AB_Misc_SoulGemBlack",
@@ -171,6 +172,27 @@ local function addDeathPactEffect()
 		particleTexture = "vfx_particle064.tga",
 		lighting = { 0.41, 0.06, 0.72 },
 		hitVFX = "VFX_SoulTrapHit",
+	})
+end
+
+local function addDismissUndeadEffect()
+	magickaExpanded.effects.conjuration.createBasicEffect({
+		id = tes3.effect.dismissUndead,
+		name = strings.dismissUndead,
+		description = strings.dismissUndeadDesc,
+		baseCost = 5.0,
+		allowEnchanting = true,
+		allowSpellmaking = true,
+		appliesOnce = true,
+		canCastTarget = true,
+		canCastTouch = true,
+		hasNoDuration = true,
+		hasNoMagnitude = true,
+		isHarmful = false,
+
+		icon = "s\\tx_s_smmn_skltlmnn.dds",
+
+		onTick = effects.onTick.dismissUndead,
 	})
 end
 
@@ -520,6 +542,7 @@ event.register("magicEffectsResolved", addDeathPactEffect)
 event.register("magicEffectsResolved", addSpreadDiseaseEffect)
 event.register("magicEffectsResolved", addDarkRitualEffect)
 event.register("magicEffectsResolved", addFeintDeathEffect)
+event.register("magicEffectsResolved", addDismissUndeadEffect)
 event.register("magicEffectsResolved", addConcealUndeadEffect)
 
 return effects

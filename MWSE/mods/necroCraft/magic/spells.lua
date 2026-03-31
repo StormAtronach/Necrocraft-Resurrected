@@ -327,6 +327,13 @@ local function registerSpells()
 			{ id = tes3.effect.raiseBoneConstruct, range = tes3.effectRange.target, min = 5, max = 5, radius = 50 },
 		},
 	})
+	magickaExpanded.spells.createBasicSpell({
+		id = id.spell.dismissUndead,
+		name = strings.dismissUndead,
+		effect = tes3.effect.dismissUndead,
+		range = tes3.effectRange.touch,
+	})
+
 	edit.necromancers()
 	edit.enchantments()
 	edit.playerSummonUndead()

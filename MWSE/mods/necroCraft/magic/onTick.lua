@@ -450,4 +450,17 @@ onTick.raiseCorpse = function(e)
 	raiseUndead { e = e, type = "corpse", func = raiseCorpse }
 end
 
+onTick.dismissUndead = function(e)
+	if not e:trigger() then return end
+	local target = e.effectInstance.target
+	if not undead.isRaisedByPlayer(target) then
+		tes3.messageBox(strings.dismissFail)
+		return
+	end
+	target.data.necroCraft = target.data.necroCraft or {}
+	target.data.necroCraft.dismissed = true
+	tes3.modStatistic{ reference = target, name = "health", current = -10000 }
+	e.effectInstance.state = tes3.spellState.retired
+end
+
 return onTick

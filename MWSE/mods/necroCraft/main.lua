@@ -12,29 +12,21 @@ local lichdom = require("NecroCraft.lichdom")
 local quests = require("NecroCraft.quests")
 local cellEdit = require("NecroCraft.cellEdit")
 local config = require("NecroCraft.config")
+require("NecroCraft.mcm")
 
 local skillStatus = "inactive"
 local activationRef
 
 local function onMenuDialog(e)
-	if not activationRef then
-		return
-	end
+	if not config.preserveTooltip then return end
+	if not activationRef then return end
 	local name = activationRef.data.necroCraft and activationRef.data.necroCraft.name
-	if not name then
-		return
-	end
+	if not name then return end
 	local child = e.element:findChild(-1044)
 	child.text = name
 end
 
-event.register("modConfigReady", function()
-	require("NecroCraft.mcm")
-	event.unregister("uiActivated", onMenuDialog, { filter = "MenuDialog" })
-	if config.preserveTooltip then
-		event.register("uiActivated", onMenuDialog, { filter = "MenuDialog" })
-	end
-end)
+event.register("uiActivated", onMenuDialog, { filter = "MenuDialog" })
 
 -- GUI stuff
 
@@ -317,6 +309,9 @@ local function onBookRead(e)
 				local NCCP = SkillsModule.getSkill("NC:CorpsePreparation")
 				corpsePreparationGlobal.value = 1
 				NCCP:setActive(true)
+				if not tes3.hasSpell{ reference = tes3.player, spell = id.spell.dismissUndead } then
+					tes3.addSpell{ reference = tes3.player, spell = id.spell.dismissUndead }
+				end
 				-- event.unregister("bookGetText", onBookRead)
 				event.register("uiActivated", onMenuContents, { filter = "MenuContents" })
 				event.register("equip", onEquip)
@@ -380,7 +375,10 @@ end
 
 local function onDeath(e)
 	local utype = undead.getType(e.reference.object)
-	if not utype then
+	if not utype then return end
+	local data = e.reference.data.necroCraft
+	if data and data.dismissed then
+		data.dismissed = nil
 		return
 	end
 	tes3.player.data.necroCraft.minions[utype][e.reference.id] = nil
@@ -500,6 +498,9 @@ local function onLoaded(e)
 	end
 	if tes3.findGlobal("NC_CorpsePreparation").value > 0 then
 		NCCP:setActive(true)
+		if not tes3.hasSpell{ reference = tes3.player, spell = id.spell.dismissUndead } then
+			tes3.addSpell{ reference = tes3.player, spell = id.spell.dismissUndead }
+		end
 		event.unregister("uiActivated", onMenuContents, { filter = "MenuContents" })
 		event.register("uiActivated", onMenuContents, { filter = "MenuContents" })
 		event.unregister("equip", onEquip)
@@ -636,8 +637,16 @@ local function onCombatStart(e)
 end
 
 local function initialized(e)
+
 	if tes3.isModActive("Necrocraft.esp") then
 		mwse.log("NecroCraft: Necrocraft.esp is active. Mod content is enabled")
+		-- Initializing the necromancers
+		for npc in tes3.iterateObjects(tes3.objectType.npc) do
+			---@cast npc tes3npc
+			if npc.class and npc.class.id == "Necromancer" then
+				config.necromancers[npc.id:lower()] = true
+			end
+		end
 		utility.ashPitReplacer()
 		utility.skeletonReplacer()
 		registerGUI()
