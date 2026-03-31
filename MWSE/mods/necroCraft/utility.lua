@@ -35,7 +35,7 @@ utility.safeDelete = function(reference)
 end
 
 utility.disposeCorpse = function(reference)
-	local controlPressed = tes3.worldController.inputController:isKeyDown(tes3.scanCode.lCtrl) 
+	local controlPressed = tes3.worldController.inputController:isKeyDown(tes3.scanCode.lCtrl)
 	if not tes3.hasCodePatchFeature(107) or not controlPressed then
 		local inventory =  reference.object.inventory
 		for _, stack in pairs(inventory) do
