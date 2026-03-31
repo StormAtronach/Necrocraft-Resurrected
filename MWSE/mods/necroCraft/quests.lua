@@ -1,6 +1,6 @@
 local magic = require("NecroCraft.magic")
 local soulGemLib = require("NecroCraft.soulgem")
-local skillModule = require("OtherSkills.skillModule")
+local SkillsModule = include("SkillsModule")
 local strings = require("NecroCraft.strings")
 local utility = require("NecroCraft.utility")
 local undead = require("NecroCraft.undead")
@@ -434,7 +434,7 @@ end
 local function onInfoResponse(e)
 	local responseCommand = string.lower(e.command)
 	if string.find(responseCommand, "journal nc_helpdres 100") or string.find(responseCommand, "journal nc_helpdres 105") then
-		local skill = skillModule.getSkill("NC:CorpsePreparation")
+		local skill = SkillsModule.getSkill("NC:CorpsePreparation")
 		skill:levelUpSkill(5)
 	end
 end

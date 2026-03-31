@@ -1,4 +1,4 @@
-local skillModule = require("OtherSkills.skillModule")
+local SkillsModule = include("SkillsModule")
 local magic = require("NecroCraft.magic")
 local utility = require("NecroCraft.utility")
 local undead = require("NecroCraft.undead")
@@ -50,12 +50,12 @@ end
 -- Skill Module and crafting
 
 local function onSkillReady()
-	skillModule.registerSkill(
-		"NC:CorpsePreparation", 
-		{	name 			=		strings.corpsePreparation, 					--default: skill id
+	SkillsModule.registerSkill(
+		{	id 				=		"NC:CorpsePreparation",
+			name 			=		strings.corpsePreparation, 					--default: skill id
 			value			= 		5,											--default: 1
 			progress		=		0, 											--default: 0
-			lvlCap			=		100, 										--default: 100	
+			maxLevel		=		100, 										--default: 100
 			icon 			=		"Icons/NecroCraft/corpsePreparation.dds", 				--default: a circle icon
 			attribute 		=		tes3.attribute.intelligence,				--optional
 			description 	= 		strings.corpsePreparationDesc,		--optional
@@ -63,11 +63,12 @@ local function onSkillReady()
 			active			=		skillStatus									--defaults to "active"
 		}
 	)
-end			
+end
 
 local function onEquip(e)
 	if bones.isBone(e.item.id) then
-		tes3ui.leaveMenuMode(tes3ui.registerID("MenuInventory"))
+		--tes3ui.leaveMenuMode(tes3ui.registerID("MenuInventory"))
+		tes3ui.leaveMenuMode()
 		event.trigger("Necrocraft:BonepilesCreation")
 	end
 end
@@ -110,7 +111,7 @@ end
 
 local function onTooltipDrawn(e)
 	if not e.reference then
-		return 
+		return
 	end
 	local child = e.tooltip:findChild(-1216)
 	if e.reference.data and e.reference.data.necroCraft and e.reference.data.necroCraft.name then
@@ -185,7 +186,7 @@ local function pickBonepile(reference)
 		return false
 	end
 	local misc = undead.pileToMisc(reference)
-	if not misc then 
+	if not misc then
 		return
 	end
 	utility.safeDelete(reference)
@@ -197,7 +198,7 @@ local function onActivate(e)
 		return
 	end
 	activationRef = e.target
-	
+
 	if not activationRef then
 		return
 	end
@@ -213,7 +214,7 @@ local function onActivate(e)
 		end
 	end
 	harvestAshpit(activationRef)
-	
+
 	local safeRef = tes3.makeSafeObjectHandle(activationRef)
 	timer.delayOneFrame(function()
 		if safeRef:valid() then
@@ -241,8 +242,8 @@ local function triggerGuards(cell)
 end
 
 local function onDetectUndead(e)
-	if not e.isDetected then 
-		return 
+	if not e.isDetected then
+		return
 	end
 	if tes3.isAffectedBy{reference = e.target, effect = tes3.effect.concealUndead} then return end
 	if (e.target == tes3.mobilePlayer and tes3.player.object.race.id == "skeletonrace") then -- or undead.isRaisedByPlayer(e.target.reference) then
@@ -280,12 +281,12 @@ local trainingBooks = {
 local function onBookRead(e)
 
 	local corpsePreparationGlobal = tes3.findGlobal("NC_CorpsePreparation")
-	local corpsePreparationSkill = skillModule.getSkill("NC:CorpsePreparation")
-	if corpsePreparationGlobal.value == 1 then
+	local corpsePreparationSkill = SkillsModule.getSkill("NC:CorpsePreparation")
+	if corpsePreparationGlobal and corpsePreparationGlobal.value == 1 then
 		if trainingBooks[e.book.id] and not tes3.player.data.necroCraft.trainingBooksRead[e.book.id] then
 			tes3.player.data.necroCraft.trainingBooksRead[e.book.id] = true
 			corpsePreparationSkill:levelUpSkill(1)
-			local message = string.format( tes3.findGMST(tes3.gmst.sNotifyMessage39).value, corpsePreparationSkill.name, corpsePreparationSkill.value ) 
+			local message = string.format( tes3.findGMST(tes3.gmst.sNotifyMessage39).value, corpsePreparationSkill.name, corpsePreparationSkill.value )
             tes3.playSound{reference = tes3.player, sound = "skillraise"}
 			tes3.messageBox( message )
 		end
@@ -305,12 +306,12 @@ local function onBookRead(e)
 	end
 	if count == 3 then
 		local buttons = {}
-		local yesButton = {	text = strings.yes, 
+		local yesButton = {	text = strings.yes,
 							callback = function()
 										tes3.addTopic{topic=strings.necromancers}
 										skillStatus = "active"
 										corpsePreparationGlobal.value = 1
-										-- skillModule.updateSkill("NC:CorpsePreparation", { active = skillStatus })
+										-- SkillsModule.updateSkill("NC:CorpsePreparation", { active = skillStatus })
 										corpsePreparationSkill:updateSkill({ active = skillStatus })
 										-- event.unregister("bookGetText", onBookRead)
 										event.register("uiActivated", onMenuContents, { filter = "MenuContents" })
@@ -319,7 +320,7 @@ local function onBookRead(e)
 		table.insert(buttons, yesButton)
 		table.insert(buttons, {text = strings.no})
 		messageBox{
-			message = strings.corpsePreparationLearnt, 
+			message = strings.corpsePreparationLearnt,
 			buttons = buttons
 		}
 	end
@@ -431,7 +432,7 @@ local function test()
 	tes3.addSpell{reference=tes3.player, spell="NC_ME_CallGreaterBonewalker"}
 	tes3.addSpell{reference=tes3.player, spell="NC_ME_SpreadDisease1"}
 	tes3.addSpell{reference=tes3.player, spell="relvel_damage"}
-	
+
 end
 
 local lastSpell
@@ -471,7 +472,7 @@ local function onLoaded(e)
 	if tes3.player.data.necroCraft == nil then tes3.player.data.necroCraft = {} end
 	if tes3.findGlobal("NC_CorpsePreparation").value > 0 then
 		skillStatus = "active"
-		skillModule.updateSkill("NC:CorpsePreparation", { active = skillStatus })
+		SkillsModule.updateSkill("NC:CorpsePreparation", { active = skillStatus })
 		event.unregister("uiActivated", onMenuContents, { filter = "MenuContents" })
 		event.register("uiActivated", onMenuContents, { filter = "MenuContents" })
 		event.unregister("equip", onEquip)
@@ -480,7 +481,7 @@ local function onLoaded(e)
 		event.register("bookGetText", onBookRead)
 	else
 		skillStatus = "inactive"
-		skillModule.updateSkill("NC:CorpsePreparation", { active = skillStatus })
+		SkillsModule.updateSkill("NC:CorpsePreparation", { active = skillStatus })
 		event.unregister("bookGetText", onBookRead)
 		event.register("bookGetText", onBookRead)
 	end
@@ -560,7 +561,7 @@ local function onItemDropped(e)
 end
 
 local function onCombatStart(e)
-	
+
 	if not e.target then return end
 
 	if e.target.data and e.target.data.necroCraft and e.target.data.necroCraft.fightCasting then
@@ -568,9 +569,9 @@ local function onCombatStart(e)
 	elseif e.actor.data and e.actor.data.necroCraft and e.actor.data.necroCraft.fightCasting then
 		return false
 	end
-	
+
 	local enemy = nil
-	
+
 	if e.target == tes3.mobilePlayer then
 		enemy = e.actor.reference
 	elseif e.actor == tes3.mobilePlayer then
@@ -578,8 +579,8 @@ local function onCombatStart(e)
 	else
 		return
 	end
-	
-	
+
+
 	if undead.pileToRaised(enemy) then
 		return false
 	elseif undead.corpseToRaised(enemy) then

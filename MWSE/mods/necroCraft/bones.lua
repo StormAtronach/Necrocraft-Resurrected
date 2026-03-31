@@ -1,4 +1,4 @@
-local skillModule = require("OtherSkills.skillModule")
+local SkillsModule = include("SkillsModule")
 
 local bones = {}
 
@@ -81,7 +81,7 @@ local function addBrokenBones(broken)
 end
 
 local function tryHarvest(bone)
-	local skill = skillModule.getSkill("NC:CorpsePreparation").value
+	local skill = SkillsModule.getSkill("NC:CorpsePreparation").value
 	local intelligence = tes3.mobilePlayer.intelligence.current
 	local luck = tes3.mobilePlayer.luck.current
 	local fatigue = tes3.mobilePlayer.fatigue

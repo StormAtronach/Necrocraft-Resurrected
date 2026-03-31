@@ -1,4 +1,4 @@
-local skillModule = require("OtherSkills.skillModule")
+local SkillsModule = include("SkillsModule")
 local strings = require("NecroCraft.strings")
 local bones = require("NecroCraft.bones")
 local undead = require("NecroCraft.undead")
@@ -53,7 +53,7 @@ local MAX_PROGRESS_DEFAULT = 30
 local MAX_SKILL_DIFF = 40
 
 local practiceSkill = function(difficulty)
-	local skill = skillModule.getSkill("NC:CorpsePreparation")
+	local skill = SkillsModule.getSkill("NC:CorpsePreparation")
 	local current = skill.value
     local required = difficulty
     local difference = math.clamp(current - required, 0, MAX_SKILL_DIFF)
