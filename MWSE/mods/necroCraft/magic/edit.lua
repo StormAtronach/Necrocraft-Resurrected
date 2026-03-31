@@ -5,6 +5,18 @@ local id = require("NecroCraft.magic.id")
 
 local edit = {}
 
+---@class MagickaExpanded.Effects.Effect
+---@field id tes3.effect
+---@field min number?
+---@field max number?
+---@field rangeType tes3.effectRange?
+---@field duration number?
+---@field radius number?
+---@field attribute tes3.attribute?
+---@field skill tes3.skill?
+---@field cost number?
+---@field object tes3magicEffect?
+
 -- Changing the behaviour of the original summon undead effects
 
 local effectsResolved = {}
@@ -59,7 +71,9 @@ edit.summonUndead = function()
 			effect.hasNoDuration = true
 			effect.appliesOnce = true
 		end]]
+
 		for enchantment in tes3.iterateObjects(tes3.objectType.enchantment) do
+			---@cast enchantment tes3enchantment
 			for i, effect in pairs(enchantment.effects) do
 				if effect.id == tes3.effect.summonSkeletalMinion then
 					effect.id = tes3.effect.callSkeletonWarrior
@@ -185,6 +199,7 @@ edit.enchantments = function()
 		enchantment.effects[1].id = tes3.effect.concealUndead
 	end
 	enchantment = tes3.getObject("Masque of Clavicus")
+	---@cast enchantment tes3enchantment
 	if enchantment then
 		local numEffects = enchantment:getActiveEffectCount()
 		enchantment.effects[numEffects + 1] = enchantment.effects[numEffects]

@@ -79,6 +79,7 @@ onTick.concealUndead = function(e)
 		-- Only setting and unsetting global variable for dialogues and visuals for player
 		-- All the other behaviour is in onDetectUndead
 		local lichdomStatus = tes3.findGlobal("NC_Lichdom")
+		if not lichdomStatus then return end
 		if e.effectInstance.state == tes3.spellState.beginning then
 			if lichdomStatus.value == 1 then
 				lichdomStatus.value = -1
@@ -145,6 +146,7 @@ local function communeFromGem(reference, soulgem, soulData)
 		orientation = { 0, 0, 0 },
 		cell = "toddtest",
 	}
+	---@ cast npcRef tes3creatureInstance|tes3npcInstance
 	npcRef.mobile:startDialogue()
 	timer.start {
 		duration = 0.1,
@@ -216,11 +218,12 @@ local function callMinion(params)
 
 	local found = nil
 
-	for minion, _ in pairs(tes3.player.data.necroCraft.minions[utype]) do
-		minion = tes3.getReference(minion)
+	for minionID, _ in pairs(tes3.player.data.necroCraft.minions[utype]) do
+		local minion = tes3.getReference(minionID)
+		---@ cast minion tes3creatureInstance
 		if minion then
 			if minion.mobile then
-				if minion.mobile.playerDistance > 2000 or tes3.getCurrentAIPackageId(minion.mobile) < 1 then -- mwscript.getDistance{reference = minion, target = caster}
+				if minion.mobile.playerDistance > 2000 or tes3.getCurrentAIPackageId({reference = minion.mobile}) < 1 then -- mwscript.getDistance{reference = minion, target = caster}
 					found = minion
 					break
 				end

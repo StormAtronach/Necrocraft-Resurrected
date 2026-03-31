@@ -58,8 +58,8 @@ utility.logMinions = function()
 end
 
 
-utility.replace = function(old, new, cell)
-	new = tes3.createReference{object=new, position=old.position, orientation=old.orientation, cell=cell}
+utility.replace = function(old, newRef, cell)
+	local new = tes3.createReference{object = newRef, position=old.position, orientation=old.orientation, cell=cell}
 	new.scale = old.scale
 	new.stackSize = old.stackSize
 	if old.data and old.data.necroCraft then
@@ -118,7 +118,7 @@ end
 utility.skeletonReplacer = function()
 	applyReplacer{object = "skeleton_weak", replacer = "NC_skeleton_weak"}
 	local oldMesh = tes3.getObject("skeleton").mesh
-	for creature in tes3.iterateObjects(tes3.objectType.creature) do
+	for creature in tes3.iterateObjects(tes3.objectType.creature) do ---@cast creature tes3creature
 		if creature.mesh == oldMesh then
 			applyReplacer{object = creature, replacer = "NC_skeleton_war"}
 		end

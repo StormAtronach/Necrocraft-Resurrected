@@ -4,6 +4,7 @@ local strings = require("NecroCraft.strings")
 local function getNPCs()
 	local temp = {}
 	for obj in tes3.iterateObjects(tes3.objectType.npc) do
+		---@cast obj tes3npc
 		temp[obj.name:lower()] = true
 	end
 

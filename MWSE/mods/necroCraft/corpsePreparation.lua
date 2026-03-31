@@ -6,7 +6,7 @@ local config = require("NecroCraft.config")
 local utility = require("NecroCraft.utility")
 local recipes = require("NecroCraft.crafting.recipes")
 
-local log = mwse.Logger.new{ modName = "NecroCraft", moduleName = "Corpse Preparation", level = config.logLevel }
+local log = mwse.Logger.new { modName = "NecroCraft", moduleName = "Corpse Preparation", level = config.logLevel }
 
 local this = {}
 
@@ -64,7 +64,8 @@ local practiceSkill = function(difficulty)
 
 	local overLevel = math.clamp(skill.current - difficulty, 0, MAX_SKILL_DIFF)
 	local progress = (1 - overLevel / MAX_SKILL_DIFF) * MAX_PROGRESS_DEFAULT
-	log:debug("practiceSkill: level=%d, difficulty=%d, overLevel=%d, progress=%.1f", skill.current, difficulty, overLevel, progress)
+	log:debug("practiceSkill: level=%d, difficulty=%d, overLevel=%d, progress=%.1f", skill.current, difficulty, overLevel,
+	progress)
 	skill:exercise(progress)
 end
 
@@ -107,7 +108,9 @@ this.onCorpseContents = function(ev, reference)
 	end
 	log:debug("onCorpseContents: corpse=%s, type=%s", reference.object.id, corpseType)
 	buttonSwitch(button, corpseType)
-	local doOnce = function(e)
+	---@type fun(e: tes3uiEventData)
+	local doOnce
+	doOnce = function(e)
 		---@cast button tes3uiElement
 		button:unregister("mouseClick", doOnce)
 		local behaviour = button.text

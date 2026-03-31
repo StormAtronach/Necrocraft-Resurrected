@@ -41,7 +41,7 @@ local function onCorruptSoulgemCollision(e)
 	if not e.collision then
 		return
 	end
-	---@type tes3magicEffect
+	---@type MagickaExpanded.Effects.Effect
 	local effect = magickaExpanded.functions.getEffectFromEffectOnEffectEvent(e, tes3.effect.corruptSoulgem)
 	local magnitude = magickaExpanded.functions.getCalculatedMagnitudeFromEffect(effect)
 	local caster = e.sourceInstance.caster
