@@ -97,7 +97,7 @@ local function onTelescopeUse()
         return
 	end
     local timestamp = tes3.getSimulationTimestamp()
-    if timestamp < tes3.player.data.necroCraft.telescopeTimestamp + 12 then
+    if timestamp < (tes3.player.data.necroCraft.telescopeTimestamp or 0) + 12 then
         tes3.messageBox(strings.telescopeAgain)
 		timer.start{
 			duration = 0.1,
@@ -198,15 +198,17 @@ end
 local function moveMagesBack()
 	for mageID, position in pairs(WHMages) do
 		local mage = tes3.getReference(mageID)
-		if mage and not mage.isDead  then
+		if mage and not mage.isDead then
+			if not mage.data.necroCraft then goto continue end
 			local position = mage.data.necroCraft.position
-			tes3.positionCell{reference = mage.id, position = position, cell = "Sadrith Mora, Wolverine Hall: Mage's Guild"}
+			tes3.positionCell{reference = mage, position = position, cell = "Sadrith Mora, Wolverine Hall: Mage's Guild"}
 			mage.data.necroCraft = nil
+			::continue::
 		end
 	end
 	local mage = tes3.getReference("uleni heleran")
-	if mage and not mage.isDead  then
-		tes3.positionCell{reference = mage.id, position = {381, 902, 66}, cell = "Sadrith Mora, Wolverine Hall: Mage's Guild"}
+	if mage and not mage.isDead then
+		tes3.positionCell{reference = mage, position = {381, 902, 66}, cell = "Sadrith Mora, Wolverine Hall: Mage's Guild"}
 	end
 end
 
@@ -215,10 +217,10 @@ end
 local function moveMagesToImperialCult()
 	for mageID, position in pairs(WHMages) do
 		local mage = tes3.getReference(mageID)
-		if mage and not mage.isDead  then
+		if mage and not mage.isDead then
 			mage.data.necroCraft = {}
 			mage.data.necroCraft.position = {mage.position.x, mage.position.y, mage.position.z}
-			tes3.positionCell{reference = mage.id, position = position, cell = "Sadrith Mora, Wolverine Hall: Imperial Shrine"}
+			tes3.positionCell{reference = mage, position = position, cell = "Sadrith Mora, Wolverine Hall: Imperial Shrine"}
 		end
 	end
 end

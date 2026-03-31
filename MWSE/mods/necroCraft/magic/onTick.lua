@@ -13,7 +13,6 @@ local diseasesTable = {
 	"yellow tick",
 	"wither",
 	"witbane",
-	"swamp fever",
 	"serpiginous dementia",
 	"rust chancre",
 	"rockjoint",
@@ -295,14 +294,12 @@ end
 
 local function raiseUndead(params)
 	local e = params.e
-	local effect = params.effect
 	local utype = params.type
 	local func = params.func
 	local effect
-	
+
 	local target = e.effectInstance.target
 	local caster = e.sourceInstance.caster
-	local cell = tes3.getPlayerCell()
 	local raised = nil
 	
 	if (not e:trigger()) then

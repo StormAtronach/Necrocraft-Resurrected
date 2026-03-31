@@ -354,8 +354,8 @@ recipes.corpses = {
 		skillRequirements = {
 			{ skill = "NC:CorpsePreparation", requirement = 50 }
 		},
-		craftCallback = function(craftable, params)
-			event.trigger("Necrocraft:CorpsePrepared", params.reference)
+		craftCallback = function(_craftable, data)
+			event.trigger("Necrocraft:CorpsePrepared", data)
 		end
 		--destroyCallback = function() event.trigger("Necrocraft:CorpseDestroyed") end
 	}
