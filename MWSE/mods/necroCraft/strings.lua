@@ -150,6 +150,7 @@ strings.shadeInDays = "Shade of the Revenant in %s Days"
 strings.mcm = {}
 strings.mcm.modName = "Necrocraft"
 strings.mcm.settings = "Settings"
+strings.mcm.logLevel = "Log Level"
 strings.mcm.modEnabled = "Enable Mod"
 strings.mcm.modEnabledDesc = "Enable Mod and all its functionality"
 strings.mcm.preserveTooltip = "Preserve Tooltip"

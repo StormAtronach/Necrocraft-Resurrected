@@ -11,7 +11,7 @@ local id = require("NecroCraft.magic.id")
 local lichdom = require("NecroCraft.lichdom")
 local quests = require("NecroCraft.quests")
 local cellEdit = require("NecroCraft.cellEdit")
-local common = require("NecroCraft.common")
+local config = require("NecroCraft.config")
 
 local skillStatus = "inactive"
 local activationRef
@@ -30,9 +30,8 @@ end
 
 event.register("modConfigReady", function()
 	require("NecroCraft.mcm")
-	common.config = require("NecroCraft.config")
 	event.unregister("uiActivated", onMenuDialog, { filter = "MenuDialog" })
-	if common.config.preserveTooltip then
+	if config.preserveTooltip then
 		event.register("uiActivated", onMenuDialog, { filter = "MenuDialog" })
 	end
 end)
@@ -115,7 +114,7 @@ local function onTooltipDrawn(e)
 	end
 	local child = e.tooltip:findChild(-1216)
 	if e.reference.data and e.reference.data.necroCraft and e.reference.data.necroCraft.name then
-		if e.reference.data.necroCraft.id or common.config.preserveTooltip then
+		if e.reference.data.necroCraft.id or config.preserveTooltip then
 			child.text = e.reference.data.necroCraft.name
 		end
 		return
@@ -171,7 +170,7 @@ local function harvestAshpit(reference)
 		duration = 0.1,
 		callback = function()
 			if tes3.mobilePlayer.bounty > bounty then
-				tes3.mobilePlayer.bounty = tes3.mobilePlayer.bounty + common.config.bountyValue
+				tes3.mobilePlayer.bounty = tes3.mobilePlayer.bounty + config.bountyValue
 			end
 		end,
 	}
@@ -396,7 +395,7 @@ local function onDetermineAction(e)
 		aiAction.raiseAllSkeletons(reference)
 	elseif utype == "bonelord" then
 		aiAction.raiseSkeleton(reference)
-	elseif common.config.necromancers[reference.object.baseObject.id:lower()] then
+	elseif config.necromancers[reference.object.baseObject.id:lower()] then
 		aiAction.raise(reference)
 	end
 end
@@ -422,7 +421,7 @@ local function onSpellTick(e)
 		end
 		return
 	end
-	if common.config.editSummonUndeadEffects and effectId > 106 and effectId < 111 then
+	if config.editSummonUndeadEffects and effectId > 106 and effectId < 111 then
 		magic.edit.createUndead(e)
 	end
 end

@@ -1,4 +1,4 @@
-local magickaExpanded = require("OperatorJack.MagickaExpanded.magickaExpanded")
+local magickaExpanded = require("OperatorJack.MagickaExpanded")
 local strings = require("NecroCraft.strings")
 local utility = require("NecroCraft.utility")
 local edit = require("NecroCraft.magic.edit")
@@ -15,7 +15,7 @@ local function registerSpells()
 		range = tes3.effectRange.target,
 		min = 20,
 		max = 20,
-		radius = 3
+		radius = 3,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -25,7 +25,7 @@ local function registerSpells()
 		range = tes3.effectRange.target,
 	})
 
-  	magickaExpanded.spells.createBasicSpell({
+	magickaExpanded.spells.createBasicSpell({
 		id = id.spell.callSkeletonCripple,
 		name = strings.callSkeletonCripple,
 		effect = tes3.effect.callSkeletonCripple,
@@ -87,7 +87,7 @@ local function registerSpells()
 		effect = tes3.effect.raiseSkeleton,
 		range = tes3.effectRange.target,
 		min = 3,
-		max = 3
+		max = 3,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -96,7 +96,7 @@ local function registerSpells()
 		effect = tes3.effect.raiseSkeleton,
 		range = tes3.effectRange.target,
 		min = 7,
-		max = 7
+		max = 7,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -105,7 +105,7 @@ local function registerSpells()
 		effect = tes3.effect.raiseSkeleton,
 		range = tes3.effectRange.target,
 		min = 10,
-		max = 10
+		max = 10,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -114,7 +114,7 @@ local function registerSpells()
 		effect = tes3.effect.raiseSkeleton,
 		range = tes3.effectRange.touch,
 		min = 100,
-		max = 100
+		max = 100,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -123,7 +123,7 @@ local function registerSpells()
 		effect = tes3.effect.raiseCorpse,
 		range = tes3.effectRange.target,
 		min = 5,
-		max = 5
+		max = 5,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -132,7 +132,7 @@ local function registerSpells()
 		effect = tes3.effect.raiseCorpse,
 		range = tes3.effectRange.target,
 		min = 8,
-		max = 8
+		max = 8,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -141,7 +141,7 @@ local function registerSpells()
 		effect = tes3.effect.raiseCorpse,
 		range = tes3.effectRange.target,
 		min = 25,
-		max = 25
+		max = 25,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -150,7 +150,7 @@ local function registerSpells()
 		effect = tes3.effect.raiseBoneConstruct,
 		range = tes3.effectRange.target,
 		min = 3,
-		max = 3
+		max = 3,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -159,7 +159,7 @@ local function registerSpells()
 		effect = tes3.effect.raiseBoneConstruct,
 		range = tes3.effectRange.target,
 		min = 8,
-		max = 8
+		max = 8,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -168,7 +168,7 @@ local function registerSpells()
 		effect = tes3.effect.raiseBoneConstruct,
 		range = tes3.effectRange.target,
 		min = 20,
-		max = 20
+		max = 20,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -176,7 +176,7 @@ local function registerSpells()
 		name = strings.deathPact1,
 		effect = tes3.effect.deathPact,
 		range = tes3.effectRange.self,
-		duration = 60
+		duration = 60,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -186,7 +186,7 @@ local function registerSpells()
 		range = tes3.effectRange.touch,
 		radius = 10,
 		min = 100,
-		max = 100
+		max = 100,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -203,7 +203,7 @@ local function registerSpells()
 		range = tes3.effectRange.target,
 		duration = 1,
 		min = 120,
-		max = 120
+		max = 120,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -213,7 +213,7 @@ local function registerSpells()
 		range = tes3.effectRange.target,
 		duration = 3,
 		min = 180,
-		max = 180
+		max = 180,
 	})
 
 	magickaExpanded.spells.createBasicSpell({
@@ -253,150 +253,58 @@ local function registerSpells()
 		name = strings.darkestRitual,
 		magickaCost = 250,
 		effects = {
-			{
-				id = tes3.effect.darkRitual,
-				range = tes3.effectRange.self,
-				duration = 20000
-			},
-			{
-				id = tes3.effect.damageHealth,
-				range = tes3.effectRange.self,
-				min = 10,
-				max = 10,
-				duration = 20000
-			},
-			{
-				id = tes3.effect.poison,
-				range = tes3.effectRange.self,
-				min = 10,
-				max = 10,
-				duration = 20000
-			},
-			{
-				id = tes3.effect.frostDamage,
-				range = tes3.effectRange.self,
-				min = 10,
-				max = 10,
-				duration = 20000
-			},
-		}
+			{ id = tes3.effect.darkRitual, range = tes3.effectRange.self, duration = 20000 },
+			{ id = tes3.effect.damageHealth, range = tes3.effectRange.self, min = 10, max = 10, duration = 20000 },
+			{ id = tes3.effect.poison, range = tes3.effectRange.self, min = 10, max = 10, duration = 20000 },
+			{ id = tes3.effect.frostDamage, range = tes3.effectRange.self, min = 10, max = 10, duration = 20000 },
+		},
 	})
 
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.touchOfPain,
 		name = strings.touchOfPain,
 		effects = {
-			{
-				id = tes3.effect.damageFatigue,
-				range = tes3.effectRange.touch,
-				min = 5,
-				max = 10,
-				duration = 5
-			},
-			{
-				id = tes3.effect.damageHealth,
-				range = tes3.effectRange.touch,
-				min = 5,
-				max = 10,
-				duration = 5
-			},
-		}
+			{ id = tes3.effect.damageFatigue, range = tes3.effectRange.touch, min = 5, max = 10, duration = 5 },
+			{ id = tes3.effect.damageHealth, range = tes3.effectRange.touch, min = 5, max = 10, duration = 5 },
+		},
 	})
 
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.touchOfAgony,
 		name = strings.touchOfAgony,
 		effects = {
-			{
-				id = tes3.effect.damageFatigue,
-				range = tes3.effectRange.touch,
-				min = 10,
-				max = 20,
-				duration = 5
-			},
-			{
-				id = tes3.effect.damageHealth,
-				range = tes3.effectRange.touch,
-				min = 10,
-				max = 20,
-				duration = 5
-			},
-		}
+			{ id = tes3.effect.damageFatigue, range = tes3.effectRange.touch, min = 10, max = 20, duration = 5 },
+			{ id = tes3.effect.damageHealth, range = tes3.effectRange.touch, min = 10, max = 20, duration = 5 },
+		},
 	})
 
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.pain,
 		name = strings.pain,
 		effects = {
-			{
-				id = tes3.effect.damageFatigue,
-				range = tes3.effectRange.target,
-				min = 5,
-				max = 10,
-				duration = 5
-			},
-			{
-				id = tes3.effect.damageHealth,
-				range = tes3.effectRange.target,
-				min = 5,
-				max = 10,
-				duration = 5
-			},
-		}
+			{ id = tes3.effect.damageFatigue, range = tes3.effectRange.target, min = 5, max = 10, duration = 5 },
+			{ id = tes3.effect.damageHealth, range = tes3.effectRange.target, min = 5, max = 10, duration = 5 },
+		},
 	})
 
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.agony,
 		name = strings.agony,
 		effects = {
-			{
-				id = tes3.effect.damageFatigue,
-				range = tes3.effectRange.target,
-				min = 10,
-				max = 10,
-				duration = 5
-			},
-			{
-				id = tes3.effect.damageHealth,
-				range = tes3.effectRange.target,
-				min = 10,
-				max = 10,
-				duration = 5
-			},
-		}
+			{ id = tes3.effect.damageFatigue, range = tes3.effectRange.target, min = 10, max = 10, duration = 5 },
+			{ id = tes3.effect.damageHealth, range = tes3.effectRange.target, min = 10, max = 10, duration = 5 },
+		},
 	})
 
 	magickaExpanded.spells.createComplexSpell({
 		id = id.spell.souldrinker,
 		name = strings.souldrinker,
 		effects = {
-			{
-				id = tes3.effect.soulTrap,
-				range = tes3.effectRange.target,
-				duration = 15
-			},
-			{
-				id = tes3.effect.absorbHealth,
-				range = tes3.effectRange.target,
-				min = 5,
-				max = 10,
-				duration = 15
-			},
-			{
-				id = tes3.effect.absorbMagicka,
-				range = tes3.effectRange.target,
-				min = 5,
-				max = 10,
-				duration = 15
-			},
-			{
-				id = tes3.effect.absorbFatigue,
-				range = tes3.effectRange.target,
-				min = 5,
-				max = 10,
-				duration = 15
-			}
-		}
+			{ id = tes3.effect.soulTrap, range = tes3.effectRange.target, duration = 15 },
+			{ id = tes3.effect.absorbHealth, range = tes3.effectRange.target, min = 5, max = 10, duration = 15 },
+			{ id = tes3.effect.absorbMagicka, range = tes3.effectRange.target, min = 5, max = 10, duration = 15 },
+			{ id = tes3.effect.absorbFatigue, range = tes3.effectRange.target, min = 5, max = 10, duration = 15 },
+		},
 	})
 
 	magickaExpanded.spells.createComplexSpell({
@@ -404,28 +312,10 @@ local function registerSpells()
 		name = strings.massReanimation,
 		magickaCost = 50,
 		effects = {
-			{
-				id = tes3.effect.raiseCorpse,
-				range = tes3.effectRange.target,
-				min = 50,
-				max = 50,
-				radius = 50
-			},
-			{
-				id = tes3.effect.raiseSkeleton,
-				range = tes3.effectRange.target,
-				min = 50,
-				max = 50,
-				radius = 50
-			},
-			{
-				id = tes3.effect.raiseBoneConstruct,
-				range = tes3.effectRange.target,
-				min = 100,
-				max = 100,
-				radius = 50
-			},
-		}
+			{ id = tes3.effect.raiseCorpse, range = tes3.effectRange.target, min = 50, max = 50, radius = 50 },
+			{ id = tes3.effect.raiseSkeleton, range = tes3.effectRange.target, min = 50, max = 50, radius = 50 },
+			{ id = tes3.effect.raiseBoneConstruct, range = tes3.effectRange.target, min = 100, max = 100, radius = 50 },
+		},
 	})
 
 	magickaExpanded.spells.createComplexSpell({
@@ -433,21 +323,9 @@ local function registerSpells()
 		name = strings.massReanimation,
 		magickaCost = 30,
 		effects = {
-			{
-				id = tes3.effect.raiseSkeleton,
-				range = tes3.effectRange.target,
-				min = 50,
-				max = 50,
-				radius = 50
-			},
-			{
-				id = tes3.effect.raiseBoneConstruct,
-				range = tes3.effectRange.target,
-				min = 5,
-				max = 5,
-				radius = 50
-			},
-		}
+			{ id = tes3.effect.raiseSkeleton, range = tes3.effectRange.target, min = 50, max = 50, radius = 50 },
+			{ id = tes3.effect.raiseBoneConstruct, range = tes3.effectRange.target, min = 5, max = 5, radius = 50 },
+		},
 	})
 	edit.necromancers()
 	edit.enchantments()

@@ -1,6 +1,6 @@
-local magickaExpanded = require("OperatorJack.MagickaExpanded.magickaExpanded")
+local magickaExpanded = require("OperatorJack.MagickaExpanded")
 local utility = require("NecroCraft.utility")
-local common  = require("NecroCraft.common")
+local config  = require("NecroCraft.config")
 local id = require("NecroCraft.magic.id")
 
 local edit = {}
@@ -49,12 +49,12 @@ local function getSummonUndeadEffect(spell)
 end
 
 edit.summonUndead = function()
-	if not common.config.editSummonUndeadEffects and not common.config.replaceSummonUndeadSpells then
+	if not config.editSummonUndeadEffects and not config.replaceSummonUndeadSpells then
 		return
 	end
-	mwse.log("NecroCraft: editSummonUndeadEffects: %s", common.config.editSummonUndeadEffects)
-	mwse.log("NecroCraft: replaceSummonUndeadSpells: %s", common.config.replaceSummonUndeadSpells)
-	if common.config.editSummonUndeadEffects then
+	mwse.log("NecroCraft: editSummonUndeadEffects: %s", config.editSummonUndeadEffects)
+	mwse.log("NecroCraft: replaceSummonUndeadSpells: %s", config.replaceSummonUndeadSpells)
+	if config.editSummonUndeadEffects then
 		--[[for effect = tes3.effect.summonSkeletalMinion, tes3.effect.summonBonelord do
 			effect.hasNoDuration = true
 			effect.appliesOnce = true
@@ -81,16 +81,16 @@ edit.summonUndead = function()
 		---@cast spell tes3spell
 		local effect = getSummonUndeadEffect(spell)
 		if effect then
-			if common.config.editSummonUndeadEffects then
+			if config.editSummonUndeadEffects then
 				spell.castType = 5
 			end
-			if common.config.replaceSummonUndeadSpells then
+			if config.replaceSummonUndeadSpells then
 				for npc in tes3.iterateObjects(tes3.objectType.npc) do
 					---@cast npc tes3npc
 					if npc == tes3.player.object or npc == tes3.player.baseObject then
 					elseif npc.spells:contains(spell) then
 						local ref = npc.id:lower()
-						if common.config.necromancers[ref] then
+						if config.necromancers[ref] then
 							-- Necromancers have summon undead and call undead spells
 							-- They can both teach the player and "create" new undead once a day
 							if effect == tes3.effect.summonSkeletalMinion then
@@ -102,7 +102,7 @@ edit.summonUndead = function()
 							elseif effect == tes3.effect.summonBonelord then
 								tes3.addSpell{actor = npc, spell = id.spell.callBonelord, updateGUI = false}
 							end
-						elseif common.config.summonTeachers[ref] then
+						elseif config.summonTeachers[ref] then
 							-- Summon teachers only teach player how to summon undead but don't do it themselves
 							-- They have only call undead spells
 							tes3.removeSpell{actor = npc, spell = spell, updateGUI = false}
@@ -138,7 +138,7 @@ edit.summonUndead = function()
 end
 
 edit.playerSummonUndead = function()
-	if common.config.replaceSummonUndeadSpells then
+	if config.replaceSummonUndeadSpells then
 		for _, spell in pairs(tes3.mobilePlayer.object.spells) do
 			---@cast spell tes3spell
 			local effect = getSummonUndeadEffect(spell)
@@ -259,7 +259,7 @@ edit.necromancers = function()
 	npc = tes3.getObject("Delvam Andarys") --[[@as tes3npc]]
 	tes3.removeSpell{actor = npc, spell = id.spell.communeDead, updateGUI = false}
 
-	for id, _ in pairs(common.config.necromancers) do
+	for id, _ in pairs(config.necromancers) do
 		if not alreadyEdited[id] then
 			npc = tes3.getObject(id) --[[@as tes3npc]]
 			if npc then

@@ -1,10 +1,10 @@
-local magickaExpanded = require("OperatorJack.MagickaExpanded.magickaExpanded")
+local magickaExpanded = require("OperatorJack.MagickaExpanded")
 local utility = require("NecroCraft.utility")
 local undead = require("NecroCraft.undead")
 local soulGemLib = require("NecroCraft.soulgem")
 local strings = require("NecroCraft.strings")
 local lichdom = require("NecroCraft.lichdom")
-local common = require("NecroCraft.common")
+local config = require("NecroCraft.config")
 
 local onTick = {}
 
@@ -25,27 +25,36 @@ local diseasesTable = {
 	"crimson_plague",
 	"chills",
 	"brown rot",
-	"ataxia"
+	"ataxia",
 }
 
 local function feintDeathEnd(target)
 	target.mobile.paralyze = 0
-	tes3.playAnimation{reference = target, group = tes3.animationGroup.knockOut, startFlag = tes3.animationStartFlag.immediateLoop}
-	tes3.playAnimation{reference = target, group = tes3.animationGroup.idle2}
+	tes3.playAnimation {
+		reference = target,
+		group = tes3.animationGroup.knockOut,
+		startFlag = tes3.animationStartFlag.immediateLoop,
+	}
+	tes3.playAnimation { reference = target, group = tes3.animationGroup.idle2 }
 	target.data.necroCraft.feintDeath = nil
-	timer.start{
+	timer.start {
 		duration = 1.7,
 		callback = function()
-			tes3.playAnimation{reference = target, group=tes3.animationGroup.idle, startFlag=tes3.animationStartFlag.normal} 
-		end
+			tes3.playAnimation { reference = target, group = tes3.animationGroup.idle,
+                        startFlag = tes3.animationStartFlag.normal }
+		end,
 	}
-end 
+end
 
 local function feintDeathBegin(target)
 	target.data.necroCraft = target.data.necroCraft or {}
 	if target.data.necroCraft.feintDeath == nil then
 		target.data.necroCraft.feintDeath = target.mobile.health.current
-		tes3.playAnimation{reference=target, group=tes3.animationGroup.death1, startFlag = tes3.animationStartFlag.immediate}
+		tes3.playAnimation {
+			reference = target,
+			group = tes3.animationGroup.death1,
+			startFlag = tes3.animationStartFlag.immediate,
+		}
 		target.mobile.paralyze = 1
 	end
 end
@@ -53,7 +62,9 @@ end
 onTick.feintDeath = function(e)
 	local target = e.effectInstance.target
 	if e.effectInstance.state == tes3.spellState.beginning then
-		timer.delayOneFrame(function() feintDeathBegin(target) end)
+		timer.delayOneFrame(function()
+			feintDeathBegin(target)
+		end)
 	elseif e.effectInstance.state == tes3.spellState.ending then
 		feintDeathEnd(target)
 	end
@@ -91,12 +102,16 @@ onTick.darkRitual = function(e)
 	local caster = e.sourceInstance.caster
 	local target = e.effectInstance.target
 	if e.effectInstance.state == tes3.spellState.beginning then
-		tes3.playAnimation{reference=target, group=tes3.animationGroup.knockDown, startFlag = tes3.animationStartFlag.immediate}
-		timer.start{
+		tes3.playAnimation {
+			reference = target,
+			group = tes3.animationGroup.knockDown,
+			startFlag = tes3.animationStartFlag.immediate,
+		}
+		timer.start {
 			duration = 3.5,
 			callback = function()
-				tes3.playAnimation{reference=target} 
-			end
+				tes3.playAnimation { reference = target }
+			end,
 		}
 		local phylactery = lichdom.setPhylactery(target)
 		if phylactery then
@@ -121,19 +136,23 @@ onTick.darkRitual = function(e)
 	end
 end
 
-
 local function communeFromGem(reference, soulgem, soulData)
 	tes3.findGlobal("NC_DeadTalk").value = 1
 	local soul = soulData.data.soulGemLib and soulData.data.soulGemLib.id or soulData.soul
-	local npcRef = tes3.createReference{object = soul, position = {0,0,0}, orientation={0,0,0}, cell="toddtest"}
+	local npcRef = tes3.createReference {
+		object = soul,
+		position = { 0, 0, 0 },
+		orientation = { 0, 0, 0 },
+		cell = "toddtest",
+	}
 	npcRef.mobile:startDialogue()
-	timer.start{
+	timer.start {
 		duration = 0.1,
 		callback = function()
 			tes3.findGlobal("NC_DeadTalk").value = 0
-			tes3.addItem{reference=reference, soul=soul, item=soulgem}
+			tes3.addItem { reference = reference, soul = soul, item = soulgem }
 			utility.safeDelete(npcRef)
-		end
+		end,
 	}
 end
 
@@ -143,11 +162,11 @@ onTick.communeDead = function(e)
 	if (not e:trigger()) then
 		return
 	end
-	local soulData = soulGemLib.releaseSoul{reference=target, restoreGem=false, gem="NC_SoulGem_AzuraB"}
+	local soulData = soulGemLib.releaseSoul { reference = target, restoreGem = false, gem = "NC_SoulGem_AzuraB" }
 	if soulData then
 		communeFromGem(target, "NC_SoulGem_AzuraB", soulData)
 	else
-		local soulData = soulGemLib.releaseSoul{reference=target, restoreGem=false, gem="AB_Misc_SoulGemBlack"}
+		local soulData = soulGemLib.releaseSoul { reference = target, restoreGem = false, gem = "AB_Misc_SoulGemBlack" }
 		if soulData then
 			communeFromGem(target, "AB_Misc_SoulGemBlack", soulData)
 		else
@@ -170,13 +189,13 @@ onTick.spreadDisease = function(e)
 		rand = math.random(1, #diseasesTable)
 		local disease = tes3.getObject(diseasesTable[rand]) --[[@as tes3spell]]
 		if not target.object.spells:contains(disease) then
-			if target == tes3.player then 
+			if target == tes3.player then
 				tes3.messageBox(tes3.findGMST(tes3.gmst.sMagicContractDisease).value, disease.name)
 			else
 				tes3.messageBox(strings.contractDisease, target.object.name, disease.name)
 			end
 		end
-		tes3.addSpell{reference=target, spell=disease}
+		tes3.addSpell { reference = target, spell = disease }
 	else
 		tes3.messageBox(tes3.findGMST(tes3.gmst.sMagicTargetResisted).value)
 	end
@@ -188,20 +207,20 @@ local function callMinion(params)
 	local e = params.e
 	local utype = params.type
 	local failMessage = params.failMessage
-	
+
 	local target = e.effectInstance.target
 	local caster = e.sourceInstance.caster
 	if (not e:trigger()) then
 		return
 	end
-	
+
 	local found = nil
-	
+
 	for minion, _ in pairs(tes3.player.data.necroCraft.minions[utype]) do
 		minion = tes3.getReference(minion)
 		if minion then
 			if minion.mobile then
-				if minion.mobile.playerDistance > 2000 or tes3.getCurrentAIPackageId(minion.mobile) < 1 then --mwscript.getDistance{reference = minion, target = caster}
+				if minion.mobile.playerDistance > 2000 or tes3.getCurrentAIPackageId(minion.mobile) < 1 then -- mwscript.getDistance{reference = minion, target = caster}
 					found = minion
 					break
 				end
@@ -211,18 +230,19 @@ local function callMinion(params)
 			end
 		end
 	end
-	
+
 	if found then
-		tes3.triggerCrime({
-            criminal = caster,
-            type = tes3.crimeType.killing,
-            value = common.config.bountyValue
-        })
+		tes3.triggerCrime({ criminal = caster, type = tes3.crimeType.killing, value = config.bountyValue })
 		local appearEffect = utility.placeInFront(caster, "NC_Appear_Effect", 150)
-		tes3.positionCell{cell = tes3.getPlayerCell(), position = appearEffect.position, reference = found, orientation = {0, 0, 0}}
-		tes3.setAIFollow{reference = found, target = caster}
+		tes3.positionCell {
+			cell = tes3.getPlayerCell(),
+			position = appearEffect.position,
+			reference = found,
+			orientation = { 0, 0, 0 },
+		}
+		tes3.setAIFollow { reference = found, target = caster }
 	else
-	  tes3.messageBox(failMessage)
+		tes3.messageBox(failMessage)
 	end
 	e.effectInstance.state = tes3.spellState.retired
 
@@ -231,38 +251,43 @@ end
 local function raiseSkeleton(caster, target, raised)
 	local cell = tes3.getPlayerCell()
 	target.mobile.paralyze = 0
-	tes3.modStatistic{reference = target, name = "fatigue", current = -2000}
+	tes3.modStatistic { reference = target, name = "fatigue", current = -2000 }
 	timer.start({
 		duration = 0.1,
 		callback = function()
-			tes3.modStatistic{reference = target, name = "fatigue", current = 2000}
-			tes3.playAnimation{reference = target, group=tes3.animationGroup.idle, startFlag=tes3.animationStartFlag.normal}
-			--tes3.runLegacyScript{command = "playGroup Idle", reference=target}
-			--tes3.playSound{sound = "UN_SKeletonArise", reference = e.effectInstance.target.object}
+			tes3.modStatistic { reference = target, name = "fatigue", current = 2000 }
+			tes3.playAnimation { reference = target, group = tes3.animationGroup.idle,
+                        startFlag = tes3.animationStartFlag.normal }
+			-- tes3.runLegacyScript{command = "playGroup Idle", reference=target}
+			-- tes3.playSound{sound = "UN_SKeletonArise", reference = e.effectInstance.target.object}
 			local safeTarget = tes3.makeSafeObjectHandle(target)
-			timer.start{
+			timer.start {
 				duration = 3.1,
 				callback = function()
-					if not safeTarget:valid() then return end
+					if not safeTarget:valid() then
+						return
+					end
 					local t = safeTarget:getObject()
 					raised = utility.replace(t, raised, cell)
 					if caster then
 						undead.handleFollow(caster, raised)
 					end
-				end
+				end,
 			}
-		end
+		end,
 	})
 end
 
 local function raiseBoneconstruct(caster, target, raised)
 	local cell = tes3.getPlayerCell()
-	tes3.playAnimation{reference=target, group=tes3.animationGroup.idle3, startFlag=tes3.animationStartFlag.normal}
+	tes3.playAnimation { reference = target, group = tes3.animationGroup.idle3, startFlag = tes3.animationStartFlag.normal }
 	local safeTarget = tes3.makeSafeObjectHandle(target)
-	timer.start{
+	timer.start {
 		duration = 3,
 		callback = function()
-			if not safeTarget:valid() then return end
+			if not safeTarget:valid() then
+				return
+			end
 			local t = safeTarget:getObject()
 			if string.endswith(raised.id, "lord") then
 				utility.placeInFront(t, "NC_Appear_Effect", 0)
@@ -271,32 +296,40 @@ local function raiseBoneconstruct(caster, target, raised)
 			if caster then
 				undead.handleFollow(caster, raised)
 			end
-		end
+		end,
 	}
 end
 
 local function raiseCorpse(caster, target, raised)
 	local cell = tes3.getPlayerCell()
-	tes3.playAnimation{reference = target, group = tes3.animationGroup.knockOut, startFlag = tes3.animationStartFlag.immediateLoop}
+	tes3.playAnimation {
+		reference = target,
+		group = tes3.animationGroup.knockOut,
+		startFlag = tes3.animationStartFlag.immediateLoop,
+	}
 	local safeTarget = tes3.makeSafeObjectHandle(target)
 	timer.start {
 		duration = 0.5,
 		callback = function()
-			if not safeTarget:valid() then return end
+			if not safeTarget:valid() then
+				return
+			end
 			local t = safeTarget:getObject()
-			tes3.playAnimation{reference = t, group = tes3.animationGroup.idle2, startFlag=tes3.animationStartFlag.normal}
-			timer.start{
+			tes3.playAnimation { reference = t, group = tes3.animationGroup.idle2, startFlag = tes3.animationStartFlag.normal }
+			timer.start {
 				duration = 3.1,
 				callback = function()
-					if not safeTarget:valid() then return end
+					if not safeTarget:valid() then
+						return
+					end
 					t = safeTarget:getObject()
 					raised = utility.replace(t, raised, cell)
 					if caster then
 						undead.handleFollow(caster, raised)
 					end
-				end
+				end,
 			}
-		end
+		end,
 	}
 end
 
@@ -309,16 +342,16 @@ local function raiseUndead(params)
 	local target = e.effectInstance.target
 	local caster = e.sourceInstance.caster
 	local raised = nil
-	
+
 	if (not e:trigger()) then
 		return
 	end
-	
+
 	if (e.effectInstance.target.object.type ~= tes3.creatureType.undead) then
 		e.effectInstance.state = tes3.spellState.retired
 		return
 	end
-	
+
 	if utype == "corpse" then
 		raised = undead.corpseToRaised(target)
 		effect = tes3.effect.raiseCorpse
@@ -330,40 +363,38 @@ local function raiseUndead(params)
 			effect = tes3.effect.raiseSkeleton
 		end
 	end
-	
-	if not raised or (string.startswith(utype, "skeleton") and not string.startswith(raised.id, "NC_skeleton")) or (utype == "boneconstruct" and not string.startswith(raised.id, "NC_bone")) then
+
+	if not raised or (string.startswith(utype, "skeleton") and not string.startswith(raised.id, "NC_skeleton")) or
+	(utype == "boneconstruct" and not string.startswith(raised.id, "NC_bone")) then
 		e.effectInstance.state = tes3.spellState.retired
 		return
 	end
-	
+
 	effect = magickaExpanded.functions.getEffectFromEffectOnEffectEvent(e, effect)
 	local magnitude = magickaExpanded.functions.getCalculatedMagnitudeFromEffect(effect)
-	
+
 	if not target.data.necroCraft then
 		target.data.necroCraft = {}
 	end
-	
+
 	local rC = target.data.necroCraft.resurrectionCount or 0
-	
+
 	if (e.effectInstance.target.object.level + rC > magnitude) then
-		tes3.messageBox(strings.raiseFail.."%s", e.effectInstance.target.baseObject.name)
+		tes3.messageBox(strings.raiseFail .. "%s", e.effectInstance.target.baseObject.name)
 		e.effectInstance.state = tes3.spellState.retired
 		return
 	end
-	
+
 	if e.effectInstance.target.object.level >= 8 then
-		if not soulGemLib.releaseSoul{reference=caster, gem="AB_Misc_SoulGemBlack"} and not soulGemLib.releaseSoul{reference=caster, gem="NC_SoulGem_AzuraB"} then
+		if not soulGemLib.releaseSoul { reference = caster, gem = "AB_Misc_SoulGemBlack" } and
+		not soulGemLib.releaseSoul { reference = caster, gem = "NC_SoulGem_AzuraB" } then
 			tes3.messageBox(strings.noBlackGem)
 			e.effectInstance.state = tes3.spellState.retired
 			return
 		end
 	end
-	
-	tes3.triggerCrime({
-		criminal = caster,
-		type = tes3.crimeType.killing,
-		value = common.config.bountyValue
-	})
+
+	tes3.triggerCrime({ criminal = caster, type = tes3.crimeType.killing, value = config.bountyValue })
 	if caster then
 		target.data.necroCraft.isBeingRaised = caster.id
 	end
@@ -376,47 +407,47 @@ local function raiseUndead(params)
 end
 
 onTick.callSkeletonCripple = function(e)
-	callMinion{e = e, type = "skeletonCripple", failMessage = strings.noSkeletonCripple}
+	callMinion { e = e, type = "skeletonCripple", failMessage = strings.noSkeletonCripple }
 end
 
 onTick.callSkeletonWarrior = function(e)
-	callMinion{e = e, type = "skeletonWarrior", failMessage = strings.noSkeletonWarrior}
+	callMinion { e = e, type = "skeletonWarrior", failMessage = strings.noSkeletonWarrior }
 end
 
 onTick.callSkeletonChampion = function(e)
-	callMinion{e = e, type = "skeletonChampion", failMessage = strings.noSkeletonChampion}
+	callMinion { e = e, type = "skeletonChampion", failMessage = strings.noSkeletonChampion }
 end
 
 onTick.callBoneSpider = function(e)
-	callMinion{e = e, type = "bonespider", failMessage = strings.noBonespider}
+	callMinion { e = e, type = "bonespider", failMessage = strings.noBonespider }
 end
 
 onTick.callBonelord = function(e)
-	callMinion{e = e, type = "bonelord", failMessage = strings.noBonelord}
+	callMinion { e = e, type = "bonelord", failMessage = strings.noBonelord }
 end
 
 onTick.callBoneoverlord = function(e)
-	callMinion{e = e, type = "boneoverlord", failMessage = strings.noBoneoverlord}
+	callMinion { e = e, type = "boneoverlord", failMessage = strings.noBoneoverlord }
 end
 
 onTick.callBonewalker = function(e)
-	callMinion{e = e, type = "bonewalker", failMessage = strings.noBonewalker}
+	callMinion { e = e, type = "bonewalker", failMessage = strings.noBonewalker }
 end
 
 onTick.callGreaterBonewalker = function(e)
-	callMinion{e = e, type = "greaterBonewalker", failMessage = strings.noGreaterBonewalker}
+	callMinion { e = e, type = "greaterBonewalker", failMessage = strings.noGreaterBonewalker }
 end
 
 onTick.raiseSkeleton = function(e)
-	raiseUndead{e=e, type = "skeleton", func = raiseSkeleton}
+	raiseUndead { e = e, type = "skeleton", func = raiseSkeleton }
 end
 
 onTick.raiseBoneConstruct = function(e)
-	raiseUndead{e=e, type = "boneconstruct", func = raiseBoneconstruct}
+	raiseUndead { e = e, type = "boneconstruct", func = raiseBoneconstruct }
 end
 
 onTick.raiseCorpse = function(e)
-	raiseUndead{e=e, type = "corpse", func = raiseCorpse}
+	raiseUndead { e = e, type = "corpse", func = raiseCorpse }
 end
 
 return onTick

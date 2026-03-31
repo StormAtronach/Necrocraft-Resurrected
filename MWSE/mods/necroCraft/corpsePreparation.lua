@@ -2,9 +2,11 @@ local SkillsModule = include("SkillsModule")
 local strings = require("NecroCraft.strings")
 local bones = require("NecroCraft.bones")
 local undead = require("NecroCraft.undead")
-local common  = require("NecroCraft.common")
+local config = require("NecroCraft.config")
 local utility = require("NecroCraft.utility")
 local recipes = require("NecroCraft.crafting.recipes")
+
+local log = mwse.Logger.new{ modName = "NecroCraft", moduleName = "Corpse Preparation", level = config.logLevel }
 
 local this = {}
 
@@ -23,7 +25,9 @@ end
 
 local function buttonSwitch(button, corpseType)
 	local function altDown(e)
-		if not tes3.menuMode() then return end
+		if not tes3.menuMode() then
+			return
+		end
 		if button.text == strings.dispose then
 			if corpseType ~= "wolf" then
 				button.text = strings.harvest
@@ -41,11 +45,11 @@ local function buttonSwitch(button, corpseType)
 		end
 	end
 	event.register("keyDown", altDown, { filter = tes3.scanCode.lAlt })
-	timer.start{
+	timer.start {
 		duration = 0.5,
 		callback = function()
 			event.unregister("keyDown", altDown, { filter = tes3.scanCode.lAlt })
-		end
+		end,
 	}
 end
 
@@ -54,35 +58,37 @@ local MAX_SKILL_DIFF = 40
 
 local practiceSkill = function(difficulty)
 	local skill = SkillsModule.getSkill("NC:CorpsePreparation")
-	local current = skill.value
-    local required = difficulty
-    local difference = math.clamp(current - required, 0, MAX_SKILL_DIFF)
-    local differenceMulti = (MAX_SKILL_DIFF-difference) / MAX_SKILL_DIFF
-    local progress = differenceMulti * MAX_PROGRESS_DEFAULT
-    skill:progressSkill(progress)
+	if (not skill) or (not difficulty) then
+		return
+	end
+
+	local overLevel = math.clamp(skill.current - difficulty, 0, MAX_SKILL_DIFF)
+	local progress = (1 - overLevel / MAX_SKILL_DIFF) * MAX_PROGRESS_DEFAULT
+	log:debug("practiceSkill: level=%d, difficulty=%d, overLevel=%d, progress=%.1f", skill.current, difficulty, overLevel, progress)
+	skill:exercise(progress)
 end
 
 local function restoreBody(reference)
-	local new = tes3.createReference{
-        object = reference.baseObject,
-        position = reference.position,
+	local new = tes3.createReference {
+		object = reference.baseObject,
+		position = reference.position,
 		orientation = reference.orientation,
-        cell = reference.cell,
-    }
+		cell = reference.cell,
+	}
 	for _, stack in pairs(new.object.inventory) do
-		tes3.removeItem{reference=new, item=stack.object, count=stack.count, playSound=false}
+		tes3.removeItem { reference = new, item = stack.object, count = stack.count, playSound = false }
 	end
 	-- if reference.data and reference.data.necroCraft then
 	-- 	new.data.necroCraft = reference.data.necroCraft
 	-- 	new.data.necroCraft.isBeingRaised = nil
 	-- end
 	for _, stack in pairs(reference.object.inventory) do
-		tes3.transferItem{from=reference, to=new, item=stack.object, count=stack.count, playSound=false}
+		tes3.transferItem { from = reference, to = new, item = stack.object, count = stack.count, playSound = false }
 	end
 	reference:disable()
-    -- timer.delayOneFrame(function()
-    --   reference:delete()
-    -- end)
+	-- timer.delayOneFrame(function()
+	--   reference:delete()
+	-- end)
 	-- utility.safeDelete(reference)
 	-- tes3.playAnimation{reference = new, group = tes3.animationGroup.knockOut, startFlag = tes3.animationStartFlag.immediateLoop}
 	-- new.mobile.paralyze = 1
@@ -92,11 +98,14 @@ end
 this.onCorpseContents = function(ev, reference)
 	local menu = ev.element
 	local button = menu:findChild(tes3ui.registerID("MenuContents_removebutton"))
-	if not button then return end
+	if not button then
+		return
+	end
 	local corpseType = getCorpseType(reference.object.baseObject)
 	if not corpseType then
 		return
 	end
+	log:debug("onCorpseContents: corpse=%s, type=%s", reference.object.id, corpseType)
 	buttonSwitch(button, corpseType)
 	local doOnce = function(e)
 		---@cast button tes3uiElement
@@ -110,11 +119,7 @@ this.onCorpseContents = function(ev, reference)
 				practiceSkill(0)
 				bones.harvest(corpseType)
 				utility.disposeCorpse(reference)
-				tes3.triggerCrime({
-					criminal = tes3.player,
-					type = tes3.crimeType.killing,
-					value = common.config.bountyValue
-				})
+				tes3.triggerCrime({ criminal = tes3.player, type = tes3.crimeType.killing, value = config.bountyValue })
 			elseif behaviour == strings.prepare then
 				recipes.handler = corpseType == "wolf" and "Wolf" or "Humanoid"
 				event.trigger("Necrocraft:CorpsePreparation")
@@ -123,7 +128,9 @@ this.onCorpseContents = function(ev, reference)
 					if reference.data and reference.data.necroCraft then
 						eventData.reference.data.necroCraft = reference.data.necroCraft
 					end
-					eventData.reference.data.necroCraft.resurrectionCount = eventData.reference.data.necroCraft.resurrectionCount and eventData.reference.data.necroCraft.resurrectionCount + 1 or 0
+					eventData.reference.data.necroCraft.resurrectionCount =
+					eventData.reference.data.necroCraft.resurrectionCount and eventData.reference.data.necroCraft.resurrectionCount + 1 or
+					0
 					local safeRef = tes3.makeSafeObjectHandle(reference)
 					timer.delayOneFrame(function()
 						if safeRef:valid() then

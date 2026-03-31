@@ -1,14 +1,15 @@
 local defaultConfig = {
 
+	logLevel = mwse.logLevel.info,
 	preserveTooltip = true,
     editSummonUndeadEffects = true,
 	replaceSummonUndeadSpells = true,
 	bountyValue = 1500,
-	
+
 	crafting = {
 		experienceGain = 50
 	},
-	
+
 	necromancers = {
 		["sharn gra-muzgob"] = true,
 		["dedaenc"] = true,
@@ -22,7 +23,7 @@ local defaultConfig = {
 		["delvam andarys"] = true,
 		["telura ulver"] = true
 	},
-	
+
 	summonTeachers = {
 		["heem-la"] = true,
 		["malven romori"] = true,

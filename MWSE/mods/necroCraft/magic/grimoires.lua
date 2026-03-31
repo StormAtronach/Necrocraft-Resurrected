@@ -1,4 +1,4 @@
-local magickaExpanded = require("OperatorJack.MagickaExpanded.magickaExpanded")
+local magickaExpanded = require("OperatorJack.MagickaExpanded")
 local id = require("NecroCraft.magic.id")
 
 local grimoires = {}

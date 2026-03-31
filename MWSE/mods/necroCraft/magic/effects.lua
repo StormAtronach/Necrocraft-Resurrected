@@ -1,4 +1,4 @@
-local magickaExpanded = require("OperatorJack.MagickaExpanded.magickaExpanded")
+local magickaExpanded = require("OperatorJack.MagickaExpanded")
 local strings = require("NecroCraft.strings")
 local utility = require("NecroCraft.utility")
 local undead = require("NecroCraft.undead")
@@ -104,8 +104,8 @@ local function addsummonSpiritEffect()
 	magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.summonSpirit,
 		name = strings.summonSpirit,
-		description = strings.summonSpiritDesc, 
-		baseCost = 10.0, -- check this 
+		description = strings.summonSpiritDesc,
+		baseCost = 10.0, -- check this
 		allowEnchanting = true,
 		allowSpellmaking = true,
 		appliesOnce = true,
@@ -128,7 +128,7 @@ local function addCorruptSoulgemEffect()
 	magickaExpanded.effects.alteration.createBasicEffect({
 		id = tes3.effect.corruptSoulgem,
 		name = strings.corruptSoulgem,
-		description = strings.corruptSoulgemDesc, 
+		description = strings.corruptSoulgemDesc,
 		baseCost = 10.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -154,7 +154,7 @@ local function addDeathPactEffect()
     magickaExpanded.effects.mysticism.createBasicEffect({
 		id = tes3.effect.deathPact,
 		name = strings.deathPact,
-		description = strings.deathPactDesc, 
+		description = strings.deathPactDesc,
 		baseCost = 12.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -178,18 +178,18 @@ local function addConcealUndeadEffect()
     magickaExpanded.effects.illusion.createBasicEffect({
 		id = tes3.effect.concealUndead,
 		name = strings.concealUndead,
-		description = strings.concealUndeadDesc, 
+		description = strings.concealUndeadDesc,
 		baseCost = 10.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
-		
+
 		canCastTarget = true,
 		canCastSelf = true,
 		canCastTouch = true,
 		hasNoMagnitude = true,
 
 		icon = "s\\tx_s_chameleon.dds",
-		
+
 		onTick = effects.onTick.concealUndead
 	})
 end
@@ -198,7 +198,7 @@ local function addFeintDeathEffect()
     magickaExpanded.effects.alteration.createBasicEffect({
 		id = tes3.effect.feintDeath,
 		name = strings.feintDeath,
-		description = strings.feintDeathDesc, 
+		description = strings.feintDeathDesc,
 		baseCost = 20.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -209,7 +209,7 @@ local function addFeintDeathEffect()
 		--appliesOnce = true,
 
 		icon = "s\\tx_s_burden.dds",
-		
+
 		onTick = effects.onTick.feintDeath,
 	})
 end
@@ -218,7 +218,7 @@ local function addDarkRitualEffect()
     magickaExpanded.effects.mysticism.createBasicEffect({
 		id = tes3.effect.darkRitual,
 		name = strings.darkRitual,
-		description = strings.darkRitualDesc, 
+		description = strings.darkRitualDesc,
 		baseCost = 1.0,
 		allowEnchanting = false,
 		allowSpellmaking = false,
@@ -229,7 +229,7 @@ local function addDarkRitualEffect()
 		hasNoMagnitude = true,
 
 		icon = "s\\tx_s_soultrap.dds",
-		
+
 		onTick = effects.onTick.darkRitual,
 	})
 end
@@ -238,7 +238,7 @@ local function addCommuneDeadEffect()
     magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.communeDead,
 		name = strings.communeDead,
-		description = strings.communeDeadDesc, 
+		description = strings.communeDeadDesc,
 		baseCost = 25.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -251,7 +251,7 @@ local function addCommuneDeadEffect()
 		isHarmful = false,
 
 		icon = "s\\tx_S_Smmn_AnctlGht.dds",
-		
+
 		onTick = effects.onTick.communeDead,
 	})
 end
@@ -260,7 +260,7 @@ local function addCallSkeletonCrippleEffect()
    	magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.callSkeletonCripple,
 		name = strings.callSkeletonCripple,
-		description = strings.callSkeletonCrippleDesc, 
+		description = strings.callSkeletonCrippleDesc,
 		baseCost = 250.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -272,7 +272,7 @@ local function addCallSkeletonCrippleEffect()
 		isHarmful = false,
 
 		icon = "s\\tx_s_smmn_skltlmnn.dds",
-		
+
 		onTick = effects.onTick.callSkeletonCripple,
 	})
 end
@@ -281,7 +281,7 @@ local function addCallSkeletonWarriorEffect()
     magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.callSkeletonWarrior,
 		name = strings.callSkeletonWarrior,
-		description = strings.callSkeletonWarriorDesc, 
+		description = strings.callSkeletonWarriorDesc,
 		baseCost = 400.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -302,7 +302,7 @@ local function addCallSkeletonChampionEffect()
     magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.callSkeletonChampion,
 		name = strings.callSkeletonChampion,
-		description = strings.callSkeletonChampionDesc, 
+		description = strings.callSkeletonChampionDesc,
 		baseCost = 600.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -323,7 +323,7 @@ local function addCallBonewalkerEffect()
    	magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.callBonewalker,
 		name = strings.callBonewalker,
-		description = strings.callBonewalkerDesc, 
+		description = strings.callBonewalkerDesc,
 		baseCost = 250.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -344,7 +344,7 @@ local function addCallGreaterBonewalkerEffect()
 	magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.callGreaterBonewalker,
 		name = strings.callGreaterBonewalker,
-		description = strings.callGreaterBonewalkerDesc, 
+		description = strings.callGreaterBonewalkerDesc,
 		baseCost = 400.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -365,7 +365,7 @@ local function addCallBonespiderEffect()
     magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.callBonespider,
 		name = strings.callBonespider,
-		description = strings.callBonespiderDesc, 
+		description = strings.callBonespiderDesc,
 		baseCost = 250.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -386,7 +386,7 @@ local function addCallBonelordEffect()
     magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.callBonelord,
 		name = strings.callBonelord,
-		description = strings.callBonelordDesc, 
+		description = strings.callBonelordDesc,
 		baseCost = 400.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -407,7 +407,7 @@ local function addCallBoneoverlordEffect()
     magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.callBoneoverlord,
 		name = strings.callBoneoverlord,
-		description = strings.callBoneoverlordDesc, 
+		description = strings.callBoneoverlordDesc,
 		baseCost = 600.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
@@ -428,7 +428,7 @@ local function addRaiseSkeletonEffect()
     magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.raiseSkeleton,
 		name = strings.raiseSkeleton,
-		description = strings.raiseSkeletonDesc, 
+		description = strings.raiseSkeletonDesc,
 		baseCost = 25.0,
 		allowEnchanting = false,
 		allowSpellmaking = false,
@@ -445,7 +445,7 @@ local function addRaiseBoneConstructEffect()
     magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.raiseBoneConstruct,
 		name = strings.raiseBoneConstruct,
-		description = strings.raiseBoneConstructDesc, 
+		description = strings.raiseBoneConstructDesc,
 		baseCost = 25.0,
 		allowEnchanting = false,
 		allowSpellmaking = false,
@@ -466,7 +466,7 @@ local function addRaiseCorpseEffect()
     magickaExpanded.effects.conjuration.createBasicEffect({
 		id = tes3.effect.raiseCorpse,
 		name = strings.raiseCorpse,
-		description = strings.raiseCorpseDesc, 
+		description = strings.raiseCorpseDesc,
 		baseCost = 25.0,
 		allowEnchanting = false,
 		allowSpellmaking = false,
@@ -487,7 +487,7 @@ local function addSpreadDiseaseEffect()
     magickaExpanded.effects.destruction.createBasicEffect({
 		id = tes3.effect.spreadDisease,
 		name = strings.spreadDisease,
-		description = strings.spreadDiseaseDesc, 
+		description = strings.spreadDiseaseDesc,
 		baseCost = 100.0,
 		allowEnchanting = true,
 		allowSpellmaking = true,
