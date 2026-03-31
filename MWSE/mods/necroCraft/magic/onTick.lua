@@ -455,6 +455,7 @@ onTick.dismissUndead = function(e)
 	local target = e.effectInstance.target
 	if not undead.isRaisedByPlayer(target) then
 		tes3.messageBox(strings.dismissFail)
+		e.effectInstance.state = tes3.spellState.retired
 		return
 	end
 	target.data.necroCraft = target.data.necroCraft or {}
