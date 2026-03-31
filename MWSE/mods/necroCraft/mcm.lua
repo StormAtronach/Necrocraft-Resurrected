@@ -26,11 +26,6 @@ local page = template:createSideBarPage({
 });
 local settings = page:createCategory(strings.mcm.settings);
 
-settings:createLogLevelOptions{
-  config = config,
-  configKey = "logLevel",
-};
-
 --[[
 settings:createOnOffButton({
   label = strings.mcm.modEnabled,

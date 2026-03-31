@@ -83,7 +83,7 @@ local function updateContainer(e)
 		tes3.player.data.necroCraft.phylactery.position = {tes3.player.position.x, tes3.player.position.y, tes3.player.position.z}
 		tes3.player.data.necroCraft.phylactery.cell = tostring(tes3.getPlayerCell())
 		--tes3.messageBox("Phylactery container:%s", e.reference.id)
-	elseif e.reference.id == tes3.player.data.necroCraft.phylactery.container then
+	elseif e.reference.id == tes3.player.data.necroCraft.container then
 		tes3.player.data.necroCraft.phylactery.container = nil
 		tes3.player.data.necroCraft.phylactery.position = nil
 		tes3.player.data.necroCraft.phylactery.cell = nil
@@ -140,16 +140,17 @@ end
 lichdom.playerResurrection = function()
 	local cell = tes3.getCell{id = tes3.player.data.necroCraft.phylactery.cell}
 	local position = tes3.player.data.necroCraft.phylactery.position
-	local container = tes3.getReference(tes3.player.data.necroCraft.phylactery.container)
+	local container = tes3.getObject(tes3.player.data.necroCraft.phylactery.container)
 	tes3.positionCell{cell = cell, position = position, reference = tes3.player, teleportCompanions = false, orientation = {0,0,0}}
+	mwse.log(container.id)
 	tes3.mobilePlayer.chameleon = 0
-	if container and container.object.inventory:contains("NC_skeleton_champ_misc") and soulGemLib.releaseSoul{reference = container, gem = "AB_Misc_SoulGemBlack"} then
+	if container.inventory:contains("NC_skeleton_champ_misc") and soulGemLib.releaseSoul{reference = container, gem = "AB_Misc_SoulGemBlack"} then
 		tes3.messageBox("Your resurrection started")
-		tes3.removeItem{reference=container, item="NC_skeleton_champ_misc", playSound=false}
+		tes3.removeItem{reference=container.id, item="NC_skeleton_champ_misc", playSound=false}
 		local bonepile = tes3.createReference{object="NC_skeleton_war_pile", position=position, orientation=tes3.player.orientation, cell=tes3.getPlayerCell()}
 		tes3.playAnimation{reference = bonepile, group = tes3.animationGroup.knockOut, startFlag = tes3.animationStartFlag.immediateLoop}
 		bonepile.mobile.paralyze = 1
-		tes3.cast{reference = container, target = bonepile, spell = id.spell.lichResurrection}
+		tes3.cast{reference = container.id, target = bonepile.id, spell = id.spell.lichResurrection}
 		timer.start{
 			duration = 3.09,
 			callback = function()

@@ -102,9 +102,9 @@ this.replaceBooks = function(cell)
 
 
 	local replacementBooks = cellBooksReplacement[cell.id]
-
-	if not replacementBooks then
-		return
+	
+	if not replacementBooks then 
+		return 
 	end
 	if tes3.player.data.necroCraft.replacedBooksInCell[cell.id] then
 		return
@@ -124,15 +124,15 @@ end
 this.replaceAshpits = function(cell)
 
     -- if tes3.player.data.necroCraft.replacedInCell[cell.id] then return end
-    if not this.ashpitWhitelist[cell.id] then
-        return
+    if not this.ashpitWhitelist[cell.id] then 
+        return 
     end
 
 	local ashpit
 	local ashpits = {
 		["in_velothi_ashpit_01"] = "nc_ashpit_01",
-		["in_velothi_ashpit_02"] = "nc_ashpit_02",
-		["in_redoran_ashpit_01"] = "nc_ashpit_r_01",
+		["in_velothi_ashpit_02"] = "nc_ashpit_02", 
+		["in_redoran_ashpit_01"] = "nc_ashpit_r_01", 
 		["in_redoran_ashpit_02"] = "nc_ashpit_r_02",
 		["ex_vivec_g_02"] = "nc_ashpit_g_02",
 		["ex_vivec_g_r_02"] = "nc_ashpit_gr_02"

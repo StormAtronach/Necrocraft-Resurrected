@@ -2,7 +2,6 @@ local magickaExpanded = require("OperatorJack.MagickaExpanded.magickaExpanded")
 local utility = require("NecroCraft.utility")
 local common  = require("NecroCraft.common")
 local id = require("NecroCraft.magic.id")
-local log = mwse.Logger.new()
 
 local edit = {}
 
@@ -53,15 +52,14 @@ edit.summonUndead = function()
 	if not common.config.editSummonUndeadEffects and not common.config.replaceSummonUndeadSpells then
 		return
 	end
-	log:debug("editSummonUndeadEffects: %s", common.config.editSummonUndeadEffects)
-	log:debug("replaceSummonUndeadSpells: %s", common.config.replaceSummonUndeadSpells)
+	mwse.log("NecroCraft: editSummonUndeadEffects: %s", common.config.editSummonUndeadEffects)
+	mwse.log("NecroCraft: replaceSummonUndeadSpells: %s", common.config.replaceSummonUndeadSpells)
 	if common.config.editSummonUndeadEffects then
 		--[[for effect = tes3.effect.summonSkeletalMinion, tes3.effect.summonBonelord do
 			effect.hasNoDuration = true
 			effect.appliesOnce = true
 		end]]
 		for enchantment in tes3.iterateObjects(tes3.objectType.enchantment) do
-			---@cast enchantment tes3enchantment
 			for i, effect in pairs(enchantment.effects) do
 				if effect.id == tes3.effect.summonSkeletalMinion then
 					effect.id = tes3.effect.callSkeletonWarrior

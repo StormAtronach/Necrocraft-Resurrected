@@ -1,7 +1,6 @@
 local undead = require("NecroCraft.undead")
 local id = require("NecroCraft.magic.id")
 local utility = require("NecroCraft.utility")
-local log = mwse.Logger.new()
 
 local aiAction = {}
 
@@ -259,7 +258,7 @@ aiAction.raiseSkeleton = function(necromancer)
 					found = cr
 					break
 				else
-					log:warn("AI Action: No valid spell was found to raise %s by %s", cr, necromancer)
+					mwse.log("[NecroCraft]: AI Action: No valid spell was found to raise %s by %s", cr, necromancer)
 				end
 			end
 		elseif cr.mobile.isDead then
@@ -269,7 +268,7 @@ aiAction.raiseSkeleton = function(necromancer)
 					spell = getSpellToRaise(necromancer, found)
 					if not spell then
 						found = nil
-						log:warn("AI Action: No valid spell was found to raise %s by %s", cr, necromancer)
+						mwse.log("[NecroCraft]: AI Action: No valid spell was found to raise %s by %s", cr, necromancer)
 					end
 					break
 				end
@@ -299,7 +298,7 @@ aiAction.raise = function(necromancer)
 					spell = getSpellToRaise(necromancer, found)
 					if not spell then
 						found = nil
-						log:warn("AI Action: No valid spell was found to raise %s by %s", cr, necromancer)
+						mwse.log("[NecroCraft]: AI Action: No valid spell was found to raise %s by %s", cr, necromancer)
 					end
 					break
 				end
@@ -311,7 +310,7 @@ aiAction.raise = function(necromancer)
 					found = cr
 					break
 				else
-					log:warn("AI Action: No valid spell was found to raise %s by %s", cr, necromancer)
+					mwse.log("[NecroCraft]: AI Action: No valid spell was found to raise %s by %s", cr, necromancer)
 				end
 			end
 		end

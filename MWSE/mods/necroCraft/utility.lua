@@ -1,6 +1,5 @@
 -- Utility functions
 
-local log = mwse.Logger.new()
 local utility = {}
 
 utility.getNecromanticSpellBonus = function (spell, shade)
@@ -49,11 +48,11 @@ end
 
 utility.logMinions = function()
 	local minions = tes3.player.data.necroCraft.minions
-	log:debug("MINIONS:")
+	mwse.log("\nMINIONS:")
 	for name, arr in pairs(minions) do
-		log:debug("%s:", name)
-		for minion_id, _ in pairs(arr) do
-			log:debug(minion_id)
+		mwse.log("\n%s:", name)
+		for minion_id, __ in pairs(arr) do
+			mwse.log(minion_id)
 		end
 	end
 end

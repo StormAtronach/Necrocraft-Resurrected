@@ -111,8 +111,7 @@ soulGemLib.captureSoul = function(params)
 	local gem = params.gem
 	local soul = params.soul
 	local text = params.text
-	local emptyCount = soulGemLib.countEmpty{reference=reference, gem=gem}
-	if not emptyCount or emptyCount == 0 then return false end
+	if not soulGemLib.countEmpty{reference=reference, gem=gem} then return false end
 	if type(soul) == "string" then
 		soul = tes3.getObject(soul)
 	end
@@ -218,8 +217,8 @@ local function onMenuInventorySelect(e)
 	local scrollpane = e.element:findChild("MenuInventorySelect_scrollpane")
 	scrollpane = scrollpane:findChild("PartScrollPane_pane")
 	for _, block in pairs(scrollpane.children) do
-		local item = block:findChild("MenuInventorySelect_item_brick")
-		if item and item.text == azuraBlack.name then
+		local item =  block:findChild("MenuInventorySelect_item_brick")
+		if item.text == azuraBlack.name then
 			block:registerBefore("mouseClick", restoreBlackAzura)
 		end
 	end
