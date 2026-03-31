@@ -243,11 +243,11 @@ local function raiseSkeleton(caster, target, raised)
 			timer.start{
 				duration = 3.1,
 				callback = function()
-					if safeTarget:valid() then
-						raised = utility.replace(target, raised, cell)
-						if caster then
-							undead.handleFollow(caster, raised)
-						end
+					if not safeTarget:valid() then return end
+					local t = safeTarget:getObject()
+					raised = utility.replace(t, raised, cell)
+					if caster then
+						undead.handleFollow(caster, raised)
 					end
 				end
 			}
@@ -258,13 +258,16 @@ end
 local function raiseBoneconstruct(caster, target, raised)
 	local cell = tes3.getPlayerCell()
 	tes3.playAnimation{reference=target, group=tes3.animationGroup.idle3, startFlag=tes3.animationStartFlag.normal}
+	local safeTarget = tes3.makeSafeObjectHandle(target)
 	timer.start{
-		duration = 3, 
+		duration = 3,
 		callback = function()
+			if not safeTarget:valid() then return end
+			local t = safeTarget:getObject()
 			if string.endswith(raised.id, "lord") then
-				utility.placeInFront(target, "NC_Appear_Effect", 0)
+				utility.placeInFront(t, "NC_Appear_Effect", 0)
 			end
-			raised = utility.replace(target, raised, cell)
+			raised = utility.replace(t, raised, cell)
 			if caster then
 				undead.handleFollow(caster, raised)
 			end
@@ -275,14 +278,19 @@ end
 local function raiseCorpse(caster, target, raised)
 	local cell = tes3.getPlayerCell()
 	tes3.playAnimation{reference = target, group = tes3.animationGroup.knockOut, startFlag = tes3.animationStartFlag.immediateLoop}
+	local safeTarget = tes3.makeSafeObjectHandle(target)
 	timer.start {
 		duration = 0.5,
 		callback = function()
-			tes3.playAnimation{reference = target, group = tes3.animationGroup.idle2, startFlag=tes3.animationStartFlag.normal}
+			if not safeTarget:valid() then return end
+			local t = safeTarget:getObject()
+			tes3.playAnimation{reference = t, group = tes3.animationGroup.idle2, startFlag=tes3.animationStartFlag.normal}
 			timer.start{
-				duration = 3.1, 
+				duration = 3.1,
 				callback = function()
-					raised = utility.replace(target, raised, cell)
+					if not safeTarget:valid() then return end
+					t = safeTarget:getObject()
+					raised = utility.replace(t, raised, cell)
 					if caster then
 						undead.handleFollow(caster, raised)
 					end

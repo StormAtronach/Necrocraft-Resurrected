@@ -504,9 +504,11 @@ local function onLoaded(e)
 	for reference in cell:iterateReferences(tes3.objectType.creature) do
 		if reference.data.necroCraft and reference.data.necroCraft.isBeingRaised then
 			local raised = undead.pileToRaised(reference) or undead.corpseToRaised(reference)
+			if not raised then goto continue end
 			local caster = reference.data.necroCraft.isBeingRaised
 			raised = utility.replace(reference, raised, cell)
 			undead.handleFollow(caster, raised)
+			::continue::
 		end
 	end
 	tes3.player.data.necroCraft.castBonus = tes3.player.data.necroCraft.castBonus or 0

@@ -163,7 +163,7 @@ edit.playerSummonUndead = function()
 end
 
 edit.sharn = function(e)
-	if e.topic ~= "MG_Sharn_Necro" and e.index < 10 then return end
+	if e.topic ~= "MG_Sharn_Necro" or e.index < 10 then return end
 	event.unregister("journal", edit.sharn)
 	tes3.addSpell{reference="sharn gra-muzgob", spell=id.spell.raiseCorpse1}
 	tes3.addSpell{reference="sharn gra-muzgob", spell=id.spell.raiseSkeleton1}

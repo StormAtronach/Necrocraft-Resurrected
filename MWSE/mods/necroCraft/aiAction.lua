@@ -200,14 +200,14 @@ end
 aiAction.raiseAll = function(necromancer)
 	local found = nil
 	for npc in tes3.getPlayerCell():iterateReferences(tes3.objectType.npc) do
-		if npc.mobile.isDead then
+		if npc.mobile and npc.mobile.isDead then
 			if necromancer.position:distance(npc.position) < 500 then
 				prepareCorpse(npc)
 			end
 		end
 	end
 	for cr in tes3.getPlayerCell():iterateReferences(tes3.objectType.creature) do
-		if cr.mobile.isDead then
+		if cr.mobile and cr.mobile.isDead then
 			if necromancer.position:distance(cr.position) < 500 then
 				prepareCorpse(cr)
 			end
@@ -261,7 +261,7 @@ aiAction.raiseSkeleton = function(necromancer)
 					mwse.log("[NecroCraft]: AI Action: No valid spell was found to raise %s by %s", cr, necromancer)
 				end
 			end
-		elseif cr.mobile.isDead then
+		elseif cr.mobile and cr.mobile.isDead then
 			if necromancer.position:distance(cr.position) < 200 then
 				found = prepareSkeleton(cr)
 				if found then
