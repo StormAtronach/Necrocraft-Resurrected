@@ -27,6 +27,7 @@ local function onMenuDialog(e)
 end
 
 event.register("uiActivated", onMenuDialog, { filter = "MenuDialog" })
+event.register("uiActivated", function() magic.edit.playerSummonUndead() end, { filter = "MenuInventory" })
 
 -- GUI stuff
 
