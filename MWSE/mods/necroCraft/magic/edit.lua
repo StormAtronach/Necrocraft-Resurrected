@@ -3,6 +3,7 @@ local utility = require("NecroCraft.utility")
 local config  = require("NecroCraft.config")
 local id = require("NecroCraft.magic.id")
 
+
 local edit = {}
 
 ---@class MagickaExpanded.Effects.Effect
@@ -64,8 +65,6 @@ edit.summonUndead = function()
 	if not config.editSummonUndeadEffects and not config.replaceSummonUndeadSpells then
 		return
 	end
-	mwse.log("NecroCraft: editSummonUndeadEffects: %s", config.editSummonUndeadEffects)
-	mwse.log("NecroCraft: replaceSummonUndeadSpells: %s", config.replaceSummonUndeadSpells)
 	if config.editSummonUndeadEffects then
 		--[[for effect = tes3.effect.summonSkeletalMinion, tes3.effect.summonBonelord do
 			effect.hasNoDuration = true
@@ -149,6 +148,7 @@ edit.summonUndead = function()
 			end
 		end
 	end
+
 end
 
 edit.playerSummonUndead = function()

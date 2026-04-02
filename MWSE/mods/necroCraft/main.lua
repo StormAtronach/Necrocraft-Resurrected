@@ -27,7 +27,35 @@ local function onMenuDialog(e)
 end
 
 event.register("uiActivated", onMenuDialog, { filter = "MenuDialog" })
-event.register("uiActivated", function() magic.edit.playerSummonUndead() end, { filter = "MenuInventory" })
+local cachedSpellList = nil
+
+local function getSpellListSnapshot()
+	local snapshot = {}
+	for _, spell in pairs(tes3.mobilePlayer.object.spells) do
+		---@cast spell tes3spell
+		snapshot[spell.id] = true
+	end
+	return snapshot
+end
+
+local function spellListChanged(snapshot)
+	if cachedSpellList == nil then return true end
+	for spellId in pairs(snapshot) do
+		if not cachedSpellList[spellId] then return true end
+	end
+	return false
+end
+
+local function updateSpellListJustInCase()
+	if not tes3.player then return end
+	local snapshot = getSpellListSnapshot()
+	if spellListChanged(snapshot) then
+		magic.edit.playerSummonUndead()
+		cachedSpellList = getSpellListSnapshot()
+	end
+end
+
+event.register(tes3.event.menuEnter, updateSpellListJustInCase, { filter = "MenuInventory" })
 
 -- GUI stuff
 
