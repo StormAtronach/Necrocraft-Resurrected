@@ -253,10 +253,10 @@ local function registerSpells()
 		name = strings.darkestRitual,
 		magickaCost = 250,
 		effects = {
-			{ id = tes3.effect.darkRitual, range = tes3.effectRange.self, duration = 20000 },
-			{ id = tes3.effect.damageHealth, range = tes3.effectRange.self, min = 10, max = 10, duration = 20000 },
-			{ id = tes3.effect.poison, range = tes3.effectRange.self, min = 10, max = 10, duration = 20000 },
-			{ id = tes3.effect.frostDamage, range = tes3.effectRange.self, min = 10, max = 10, duration = 20000 },
+			{ id = tes3.effect.darkRitual, range = tes3.effectRange.self, duration = 120 },
+			{ id = tes3.effect.damageHealth, range = tes3.effectRange.self, min = 3, max = 3, duration = 120 },
+			{ id = tes3.effect.poison, range = tes3.effectRange.self, min = 1, max = 1, duration = 120 },
+			{ id = tes3.effect.frostDamage, range = tes3.effectRange.self, min = 1, max = 1, duration = 120 },
 		},
 	})
 

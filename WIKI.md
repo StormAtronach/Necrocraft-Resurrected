@@ -232,10 +232,10 @@ Lichdom is an advanced questline-gated transformation. The path to becoming a li
 
 ### The Process (High-Level)
 
-1. Obtain the **Death Pact** enchantment (constant effect on an item) — this item becomes your **phylactery**
-2. Cast **Darkest of Rituals** (250 magicka cost, multi-effect damage) while the phylactery is in your inventory — this bonds your soul to the item and marks it
-3. Place the phylactery inside a **container** — the game tracks that container's location as your resurrection point
-4. On death, instead of a normal death screen: your corpse is created at your location, your body shrinks invisible, controls lock, and the `playerResurrection` function fires
+1. Obtain the **Death Pact** enchantment (constant effect on an item) — this item becomes your **phylactery**. Keep it equipped/in your inventory.
+2. Cast **Darkest of Rituals** (250 magicka cost) while the phylactery is in your inventory — this bonds your soul to the item and marks it. The ritual is a **2-minute ordeal**: after a brief knockdown you suffer a steady **5 health/second drain** (split across health, poison, and frost damage) for the full duration, totalling **600 damage**. You are meant to **survive** it, so bring **recovery magic or potions** to out-heal the drain — if your phylactery leaves your inventory before the ritual completes, the bond breaks and the interruption kills you.
+3. Once the ritual completes, place the phylactery inside a **container** — the game tracks that container's location as your resurrection point
+4. On a **later death**, instead of a normal death screen: your corpse is created at your location, your body shrinks invisible, controls lock, and the `playerResurrection` function fires
 
 ### Resurrection Mechanics
 

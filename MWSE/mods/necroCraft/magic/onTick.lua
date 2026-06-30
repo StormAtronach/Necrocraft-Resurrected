@@ -124,7 +124,7 @@ onTick.darkRitual = function(e)
 		end
 	elseif e.effectInstance.state == tes3.spellState.ending then
 		local effect = magickaExpanded.functions.getEffectFromEffectOnEffectEvent(e, tes3.effect.darkRitual)
-		if e.effectInstance.timeActive == effect.duration then
+		if e.effectInstance.timeActive >= effect.duration then
 			tes3.messageBox(strings.ritualEnd)
 			tes3.player.data.necroCraft.phylactery = {}
 			lichdom.ritualDone()
