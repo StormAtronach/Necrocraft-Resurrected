@@ -91,7 +91,7 @@ Fragments can be re-assembled into functional parts:
 
 ## Minion Types
 
-All player-raised minions follow the player and are tracked in `tes3.player.data.necroCraft.minions`.
+All player-raised minions follow the player. Minion membership is tracked in a flat, self-pruning index at `tes3.player.data.necroCraft.minionIndex` (keyed by reference id), with the authoritative per-minion record stored on the reference itself at `reference.data.necroCraft` (see [Architecture & Maintenance Notes](#architecture--maintenance-notes)).
 
 ### Skeletons
 
@@ -332,3 +332,52 @@ Spells cannot be bought from merchants in the traditional sense — they are lea
 - **CraftingFramework** — Bone pile and corpse preparation menus
 - **Skills Module** — Corpse Preparation custom skill (`NC:CorpsePreparation`)
 - **OAAB Data** — Provides the `AB_Misc_Bone*` bone part items used in all assembly recipes
+
+---
+
+## Architecture & Maintenance Notes
+
+This section documents the internals of two subsystems (`undead.lua`) that were reworked to fix a crash and remove fragile runtime state. Read it before touching classification or minion tracking.
+
+### The "no Animation class!" CTD (fixed — do not reintroduce)
+
+The mod used to unify the look of world skeletons with Necrocraft's by rewriting base-creature meshes at runtime: `skeletonReplacer()` set `object.mesh = ...` on `skeleton_weak` and every creature sharing the vanilla skeleton mesh.
+
+Mutating an **animated creature's base mesh at runtime desyncs references that were already saved with the original mesh**. On load, such a reference enters simulation with no animation attachment, and the engine treats that as fatal — it logs `Actor Animation problem with "<id>". This actor has no Animation class!` and calls `ExitProcess` (a hard crash to desktop). This is what produced the `skeleton_weak00000000` CTD.
+
+**Resolution:** all runtime mesh mutation of creatures was removed. `skeleton_weak` (the Creatures/undeads "Decayed Skeleton") keeps its own animated mesh and is simply classified as `skeletonCripple` by id, so harvesting/raising still work on it. The visual unification was dropped. If it is wanted back, it belongs in a **load-ordered patch `.esp` that edits the creatures' `MODL`**, never in runtime Lua. (`ashPitReplacer` still uses `object.mesh`, but only on static furniture — that is animation-free and safe.)
+
+### Undead classification (`undead.getType`)
+
+Undead type is keyed by **object id**, not by mesh path. `undead.getType(object)` looks up `object.baseObject.id` (lowercased) in a static `idToType` table built once per load by `undead.buildRegistry()`:
+
+1. **Anchors** (`registryAnchors`) — an `(objectId, type)` per canonical creature. Each is registered by id, and its mesh seeds every other creature sharing that mesh (reproducing the reach of the old `meshToType`).
+2. **Explicit registrations** (`registryExplicit`) — id→type for the raised `NC_` creatures whose meshes do **not** match a vanilla anchor (`NC_bonewolf` uses `r\UnDeadWolf_2.nif`, `NC_zombie` uses `OAAB\r\zombieFresh.nif`). Without these they classify as `nil`. Declaring them by id makes classification independent of whatever mesh two mods happen to ship.
+3. **Mesh seeding pass** — resolves same-mesh creatures into concrete ids once, guarded so it never overrides an explicit entry.
+
+The `"skeleton"` type is level-split into `skeletonWarrior`/`skeletonChampion` at lookup time.
+
+**Extension point:** `undead.registerType(id, type)` is public — compatibility patches for other creature mods can register their undead with one call instead of needing a shared mesh.
+
+### Minion tracking (`undead.lua`)
+
+Player-minion state lives in **two synced stores**:
+
+- **Per-reference (authoritative record):** `reference.data.necroCraft.isMinion` / `.minionType`. Travels and serializes with the reference. Read/written through the supported `tes3reference.data` API — **never `reference.itemData`** (that is an item structure; a creature only holds lua data because MWSE backs `.data` with a Variables attachment, an internal detail we don't depend on). Every write is gated on `reference.supportsLuaData`.
+- **Player-side (membership index):** `tes3.player.data.necroCraft.minionIndex[refId] = type`. A flat, self-pruning table. It exists because you cannot answer *"is this arbitrary creature a minion?"* from per-reference data without `reference.data` **allocating** a Variables attachment on every creature tested. The index answers membership from a plain id lookup, so `.data` is only ever read on references it already confirms are minions.
+
+Invariants:
+- `markMinion` writes **both stores or neither** (the index store is always creatable since it lives on player data; if the reference cannot hold lua data, nothing is written and it returns `false`).
+- All membership reads gate on the index first (`isMinion`, `getMinionType`, `isRaisedByPlayer`, `onDeath`), so `.data` is never allocated on non-minions.
+- `forEachMinion(fn, filterType)` iterates the index, resolves each id, prunes entries whose reference is loaded but no longer a minion, and skips dead minions.
+
+Public API: `markMinion`, `unmarkMinion`, `isMinion`, `getMinionType`, `forEachMinion`, `getRefData`.
+
+### Save migration
+
+Pre-refactor saves stored minions in typed buckets at `tes3.player.data.necroCraft.minions`. Migration is two-phase and **lossless**, so a user updating mid-playthrough keeps every existing minion:
+
+- **Eager** — `undead.migrateLegacyMinions()` (run from `undead.init` on load) re-marks minions in currently-active cells so they are tracked from the first frame.
+- **Lazy** — `undead.migrateReferenceIfLegacy(reference)` runs on every `mobileActivated` (wired in `main.lua`), porting each minion's legacy entry as its cell loads.
+
+The legacy table is deleted only once **every** bucket is drained. Entries for minions in cells never revisited linger harmlessly and migrate if those cells are ever loaded — nothing is silently dropped.

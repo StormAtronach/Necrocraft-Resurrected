@@ -300,12 +300,12 @@ quests.journal = function(e)
 						if skeletonCount < 2 then
 							skeletonCount = skeletonCount + 1
 							tes3.setAIFollow{reference = ref, target = tes3.getReference("daris adram")}
-							tes3.player.data.necroCraft.minions[undeadType][ref.id] = nil
+							undead.unmarkMinion(ref)
 						end
 					elseif undeadType == "bonewalker" then
 						if bonewalkerCount < 2 then
 							tes3.setAIFollow{reference = ref, target = tes3.getReference("daris adram")}
-							tes3.player.data.necroCraft.minions[undeadType][ref.id] = nil
+							undead.unmarkMinion(ref)
 							bonewalkerCount = bonewalkerCount + 1
 						end
 					end

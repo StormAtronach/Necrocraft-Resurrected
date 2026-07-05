@@ -218,21 +218,18 @@ local function callMinion(params)
 
 	local found = nil
 
-	for minionID, _ in pairs(tes3.player.data.necroCraft.minions[utype]) do
-		local minion = tes3.getReference(minionID)
-		---@ cast minion tes3creatureInstance
-		if minion then
-			if minion.mobile then
-				if minion.mobile.playerDistance > 2000 or tes3.getCurrentAIPackageId({reference = minion.mobile}) < 1 then -- mwscript.getDistance{reference = minion, target = caster}
-					found = minion
-					break
-				end
-			else
+	undead.forEachMinion(function(minion)
+		---@cast minion tes3reference
+		if minion.mobile then
+			if minion.mobile.playerDistance > 2000 or tes3.getCurrentAIPackageId({reference = minion.mobile}) < 1 then -- mwscript.getDistance{reference = minion, target = caster}
 				found = minion
-				break
+				return true
 			end
+		else
+			found = minion
+			return true
 		end
-	end
+	end, utype)
 
 	if found then
 		tes3.triggerCrime({ criminal = caster, type = tes3.crimeType.killing, value = config.bountyValue })

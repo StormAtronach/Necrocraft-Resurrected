@@ -247,19 +247,15 @@ local function onActivate(e)
 end
 
 local function triggerGuards(cell)
-	local minions = tes3.player.data.necroCraft.minions
 	for ref in cell:iterateReferences(tes3.objectType.npc) do
 		if ref.object.isGuard then
-			for _, arr in pairs(minions) do
-				for minion_id, __ in pairs(arr) do
-					local minionRef = tes3.getReference(minion_id)
-					if minionRef and ref.position:distance(minionRef.position) < 5000 then
-						if not tes3.isAffectedBy { reference = minionRef, effect = tes3.effect.concealUndead } then
-							ref.mobile:startCombat(minionRef.mobile)
-						end
+			undead.forEachMinion(function(minionRef)
+				if minionRef.mobile and ref.position:distance(minionRef.position) < 5000 then
+					if not tes3.isAffectedBy { reference = minionRef, effect = tes3.effect.concealUndead } then
+						ref.mobile:startCombat(minionRef.mobile)
 					end
 				end
-			end
+			end)
 		end
 	end
 end
@@ -403,14 +399,17 @@ local function onDamage(e)
 end
 
 local function onDeath(e)
-	local utype = undead.getType(e.reference.object)
-	if not utype then return end
-	local data = e.reference.data.necroCraft
-	if data and data.dismissed then
-		data.dismissed = nil
+	-- Gate on minion membership (cheap id-index lookup), not getType: this avoids
+	-- allocating lua data on every wild-undead death, and correctly untracks a minion
+	-- even if its type failed to classify. Only tracked minions have .data here.
+	if not undead.isMinion(e.reference) then return end
+	local nc = undead.getRefData(e.reference, false)
+	if nc and nc.dismissed then
+		-- Dismissed minions die but stay tracked so they can be resummoned.
+		nc.dismissed = nil
 		return
 	end
-	tes3.player.data.necroCraft.minions[utype][e.reference.id] = nil
+	undead.unmarkMinion(e.reference)
 end
 
 local function onDetermineAction(e)
@@ -434,6 +433,7 @@ local function onSpellTick(e)
 		local raised = undead.pileToRaised(e.target) or undead.corpseToRaised(e.target)
 		if raised then
 			local utype = undead.getType(raised)
+			if not utype then return end -- unclassified raise target: nothing to validate
 			local expected
 			if string.startswith(utype, "skeleton") then
 				expected = tes3.effect.raiseSkeleton
@@ -612,6 +612,13 @@ local function onMobileActivated(e)
 	end
 end
 
+-- Lazy migration of pre-refactor saves: as each actor's mobile activates, port any
+-- legacy minion-table entry for it to the new tracking (no-ops once fully migrated).
+-- Separate handler so the early returns in onMobileActivated cannot skip it.
+local function onMobileActivatedMigrate(e)
+	undead.migrateReferenceIfLegacy(e.reference)
+end
+
 local function onItemDropped(e)
 	local pile = undead.miscToPile(e.reference)
 	if pile then
@@ -677,11 +684,11 @@ local function initialized(e)
 			end
 		end
 		utility.ashPitReplacer()
-		utility.skeletonReplacer()
 		registerGUI()
 		event.register("determineAction", onDetermineAction)
 		event.register("combatStart", onCombatStart)
 		event.register("mobileActivated", onMobileActivated)
+		event.register("mobileActivated", onMobileActivatedMigrate)
 		event.register("itemDropped", onItemDropped)
 		event.register("damage", onDamage)
 		event.register("cellChanged", onCellChanged)

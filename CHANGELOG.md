@@ -1,5 +1,33 @@
 # Necrocraft — Code Changes Changelog
 
+## Skeleton CTD Fix & Undead-System Refactor
+
+A crash-to-desktop was traced to the runtime mesh replacer, and fixing it properly required reworking undead classification and minion tracking. See `WIKI.md` → *Architecture & Maintenance Notes* for the full design.
+
+### The `"no Animation class!"` CTD (`utility.lua`)
+
+- **Root cause:** `skeletonReplacer()` set `object.mesh = ...` on `skeleton_weak` and every creature sharing the vanilla skeleton mesh, at runtime, on `initialized`. Mutating an animated creature's base mesh desyncs references already saved with the original mesh — on load such a reference enters simulation with no animation attachment, and the engine responds with the fatal `Actor Animation problem with "<id>". This actor has no Animation class!` handler, which calls `ExitProcess` (hard CTD). This produced the `skeleton_weak00000000` crash.
+- **Fix:** removed `skeletonReplacer` and all runtime creature-mesh mutation (both the original mesh-swap and an interim reference-swap approach). `ashPitReplacer` is kept — it only rewrites static furniture meshes, which are animation-free and safe. Visual unification of world skeletons is dropped; if wanted it belongs in a load-ordered patch `.esp` that edits `MODL`, never in runtime Lua.
+
+### Classification by id, not mesh (`undead.lua`)
+
+- **`getType` now keys on object id, not `object.mesh`.** The previous `meshToType` reverse-lookup (see *Performance & GC Optimizations* below) required the mesh mutation above to make foreign skeletons classify; keying on id severs that dependency. `idToType` is built once per load by `undead.buildRegistry()` from: explicit anchor ids (+ a mesh-seeding pass that reproduces the old same-mesh reach), plus explicit registrations for the raised `NC_` creatures whose meshes do **not** match a vanilla anchor (`NC_bonewolf` = `r\UnDeadWolf_2.nif`, `NC_zombie` = `OAAB\r\zombieFresh.nif`) and so previously classified as `nil`.
+- **`undead.registerType(id, type)`** is exposed as a public extension point for compatibility patches.
+
+### Minion tracking (`undead.lua`, `main.lua`, `magic/onTick.lua`, `quests.lua`)
+
+- **Replaced the typed global buckets** (`tes3.player.data.necroCraft.minions[type][id]`) with a two-store model: a flat, self-pruning membership index `minionIndex[refId] = type`, plus the authoritative per-reference record `reference.data.necroCraft.isMinion/.minionType`. This fixes the old buckets' nil-index hazards (e.g. missing `lich`/`lichKing` buckets), the unbounded leak (index entries are pruned as they go stale), and the `startswith("NC_")` id-prefix heuristic in `isRaisedByPlayer` (now a data lookup).
+- **Per-reference data uses the supported `tes3reference.data` API, gated on `supportsLuaData`** — never `reference.itemData` (an item structure). The index exists specifically so membership can be answered by an id lookup without `reference.data` allocating a Variables attachment on every creature scanned; `.data` is only read on references the index already confirms are minions.
+- **`markMinion` writes both stores atomically** (or neither, if the reference cannot hold lua data).
+- New API: `markMinion`, `unmarkMinion`, `isMinion`, `getMinionType`, `forEachMinion`, `getRefData`. Callers updated: `onDeath` (gates on `isMinion` instead of `getType`, avoiding a `.data` allocation on every wild-undead death), `triggerGuards`, `callMinion`, and the Daris Adram quest reassignment.
+- **`onSpellTick` guarded against `nil` type** (`if not utype then return end`) so an unclassified raise target can no longer crash `string.startswith`.
+
+### Lossless save migration (`undead.lua`, `main.lua`)
+
+- Pre-refactor saves are migrated in two phases so no standing minion is lost: **eager** (`migrateLegacyMinions`, on load, ports minions in active cells) and **lazy** (`migrateReferenceIfLegacy`, on `mobileActivated`, ports each minion as its cell loads). The legacy `minions` table is deleted only once every bucket is drained; entries for never-revisited cells linger harmlessly and migrate if those cells are ever loaded.
+
+---
+
 ## Bug Fixes
 
 ### `magic/edit.lua`

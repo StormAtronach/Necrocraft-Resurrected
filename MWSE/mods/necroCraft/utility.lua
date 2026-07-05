@@ -47,13 +47,14 @@ utility.disposeCorpse = function(reference)
 end
 
 utility.logMinions = function()
-	local minions = tes3.player.data.necroCraft.minions
+	-- Reads the flat per-player index maintained by undead.markMinion/unmarkMinion.
+	-- Kept dependency-free (utility must not require undead) so this stays a debug helper.
+	local pd = tes3.player.data.necroCraft
+	local index = pd and pd.minionIndex
 	mwse.log("\nMINIONS:")
-	for name, arr in pairs(minions) do
-		mwse.log("\n%s:", name)
-		for minion_id, __ in pairs(arr) do
-			mwse.log(minion_id)
-		end
+	if not index then return end
+	for minionId, utype in pairs(index) do
+		mwse.log("%s: %s", tostring(utype), minionId)
 	end
 end
 
@@ -115,14 +116,13 @@ utility.ashPitReplacer = function()
 	applyReplacer({object = "nc_ashpit_r_02", replacer = "in_redoran_ashpit_02"})
 end
 
-utility.skeletonReplacer = function()
-	applyReplacer{object = "skeleton_weak", replacer = "NC_skeleton_weak"}
-	local oldMesh = tes3.getObject("skeleton").mesh
-	for creature in tes3.iterateObjects(tes3.objectType.creature) do ---@cast creature tes3creature
-		if creature.mesh == oldMesh then
-			applyReplacer{object = creature, replacer = "NC_skeleton_war"}
-		end
-	end
-end
+-- NOTE (architecture #2/#3): world skeletons are no longer visually unified with
+-- Necrocraft's meshes. The former mechanisms -- a runtime base-mesh mutation
+-- (skeletonReplacer) and its later replacement, a live reference swap -- are both
+-- gone. The mesh mutation was the direct cause of the "no Animation class!" CTD,
+-- and neither is needed for behaviour: undead.getType classifies skeletons by ID
+-- now, so harvesting/raising work on the untouched creatures. If the cosmetic
+-- unification is wanted back, it belongs in a load-ordered patch .esp that edits
+-- the creatures' MODL, not in runtime Lua.
 
 return utility
